@@ -186,26 +186,60 @@
       }
     ];
 
+    // In-memory Database Fallback for local double-click (file:// protocol) where localStorage might block
+    let memoryDB = {
+      categories: [...DEFAULT_CATEGORIES],
+      projects: [...DEFAULT_PROJECTS],
+      settings: { ...DEFAULT_SETTINGS },
+      inquiries: [],
+      session: null
+    };
+
+    function isLocalStorageAvailable() {
+      try {
+        localStorage.setItem("test_storage", "test");
+        localStorage.removeItem("test_storage");
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    const useStorage = isLocalStorageAvailable();
+
     // Seed Database to LocalStorage
     function initDatabase() {
-      if (!localStorage.getItem("nexus_categories")) {
-        localStorage.setItem("nexus_categories", JSON.stringify(DEFAULT_CATEGORIES));
+      if (!useStorage) {
+        console.warn("Local storage blocked or unavailable (e.g. running on file://). Falling back to In-Memory DB.");
+        return;
       }
-      if (!localStorage.getItem("nexus_settings")) {
-        localStorage.setItem("nexus_settings", JSON.stringify(DEFAULT_SETTINGS));
-      }
-      if (!localStorage.getItem("nexus_projects")) {
-        localStorage.setItem("nexus_projects", JSON.stringify(DEFAULT_PROJECTS));
-      }
-      if (!localStorage.getItem("nexus_inquiries")) {
-        localStorage.setItem("nexus_inquiries", JSON.stringify([]));
+      try {
+        if (!localStorage.getItem("nexus_categories")) {
+          localStorage.setItem("nexus_categories", JSON.stringify(DEFAULT_CATEGORIES));
+        }
+        if (!localStorage.getItem("nexus_settings")) {
+          localStorage.setItem("nexus_settings", JSON.stringify(DEFAULT_SETTINGS));
+        }
+        if (!localStorage.getItem("nexus_projects")) {
+          localStorage.setItem("nexus_projects", JSON.stringify(DEFAULT_PROJECTS));
+        }
+        if (!localStorage.getItem("nexus_inquiries")) {
+          localStorage.setItem("nexus_inquiries", JSON.stringify([]));
+        }
+      } catch (e) {
+        console.error("Failed to seed localStorage:", e);
       }
     }
 
     // Database access helpers
     const db = {
       getCategories() {
-        return JSON.parse(localStorage.getItem("nexus_categories")).sort((a, b) => a.sort_order - b.sort_order);
+        if (!useStorage) return memoryDB.categories.sort((a, b) => a.sort_order - b.sort_order);
+        try {
+          return JSON.parse(localStorage.getItem("nexus_categories") || "[]").sort((a, b) => a.sort_order - b.sort_order);
+        } catch (e) {
+          return [...DEFAULT_CATEGORIES];
+        }
       },
       saveCategory(cat) {
         const list = this.getCategories();
@@ -217,16 +251,33 @@
           cat.created_at = new Date().toISOString();
           list.push(cat);
         }
-        localStorage.setItem("nexus_categories", JSON.stringify(list));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_categories", JSON.stringify(list)); } catch (e) {}
+        } else {
+          memoryDB.categories = list;
+        }
         return cat;
       },
       deleteCategory(id) {
         const list = this.getCategories();
         const filtered = list.filter(c => c.id !== id);
-        localStorage.setItem("nexus_categories", JSON.stringify(filtered));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_categories", JSON.stringify(filtered)); } catch (e) {}
+        } else {
+          memoryDB.categories = filtered;
+        }
       },
       getProjects(includeDrafts = false) {
-        const list = JSON.parse(localStorage.getItem("nexus_projects")) || [];
+        let list = [];
+        if (!useStorage) {
+          list = memoryDB.projects;
+        } else {
+          try {
+            list = JSON.parse(localStorage.getItem("nexus_projects") || "[]");
+          } catch (e) {
+            list = [...DEFAULT_PROJECTS];
+          }
+        }
         const filtered = includeDrafts ? list : list.filter(p => p.is_published);
         return filtered.sort((a, b) => a.sort_order - b.sort_order);
       },
@@ -249,45 +300,78 @@
           proj.created_at = new Date().toISOString();
           list.push(proj);
         }
-        localStorage.setItem("nexus_projects", JSON.stringify(list));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_projects", JSON.stringify(list)); } catch (e) {}
+        } else {
+          memoryDB.projects = list;
+        }
         return proj;
       },
       deleteProject(id) {
-        // Soft delete (setting is_published = false)
         const list = this.getProjects(true);
         const index = list.findIndex(p => p.id === id);
         if (index !== -1) {
           list[index].is_published = false;
-          localStorage.setItem("nexus_projects", JSON.stringify(list));
+          if (useStorage) {
+            try { localStorage.setItem("nexus_projects", JSON.stringify(list)); } catch (e) {}
+          } else {
+            memoryDB.projects = list;
+          }
         }
       },
       hardDeleteProject(id) {
         const list = this.getProjects(true);
         const filtered = list.filter(p => p.id !== id);
-        localStorage.setItem("nexus_projects", JSON.stringify(filtered));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_projects", JSON.stringify(filtered)); } catch (e) {}
+        } else {
+          memoryDB.projects = filtered;
+        }
       },
       getSettings() {
-        return JSON.parse(localStorage.getItem("nexus_settings")) || DEFAULT_SETTINGS;
+        if (!useStorage) return memoryDB.settings;
+        try {
+          return JSON.parse(localStorage.getItem("nexus_settings") || "[]") || DEFAULT_SETTINGS;
+        } catch (e) {
+          return DEFAULT_SETTINGS;
+        }
       },
       saveSettings(settings) {
         settings.updated_at = new Date().toISOString();
-        localStorage.setItem("nexus_settings", JSON.stringify(settings));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_settings", JSON.stringify(settings)); } catch (e) {}
+        } else {
+          memoryDB.settings = settings;
+        }
         return settings;
       },
       getInquiries() {
-        return JSON.parse(localStorage.getItem("nexus_inquiries")) || [];
+        if (!useStorage) return memoryDB.inquiries;
+        try {
+          return JSON.parse(localStorage.getItem("nexus_inquiries") || "[]") || [];
+        } catch (e) {
+          return [];
+        }
       },
       saveInquiry(inq) {
         const list = this.getInquiries();
         inq.id = "inq-" + Date.now();
         inq.created_at = new Date().toISOString();
         list.push(inq);
-        localStorage.setItem("nexus_inquiries", JSON.stringify(list));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_inquiries", JSON.stringify(list)); } catch (e) {}
+        } else {
+          memoryDB.inquiries = list;
+        }
       },
       deleteInquiry(id) {
         const list = this.getInquiries();
         const filtered = list.filter(inq => inq.id !== id);
-        localStorage.setItem("nexus_inquiries", JSON.stringify(filtered));
+        if (useStorage) {
+          try { localStorage.setItem("nexus_inquiries", JSON.stringify(filtered)); } catch (e) {}
+        } else {
+          memoryDB.inquiries = filtered;
+        }
       }
     };
 
@@ -297,20 +381,30 @@
     const auth = {
       login(email, password) {
         if (email === MOCK_EMAIL && password === MOCK_PASSWORD) {
-          localStorage.setItem("nexus_admin_session", JSON.stringify({ email, authenticated: true, timestamp: Date.now() }));
+          const sessionObj = { email, authenticated: true, timestamp: Date.now() };
+          if (useStorage) {
+            try { localStorage.setItem("nexus_admin_session", JSON.stringify(sessionObj)); } catch (e) {}
+          } else {
+            memoryDB.session = sessionObj;
+          }
           return { success: true };
         }
         return { success: false, error: "이메일 또는 비밀번호가 틀립니다. (admin@team.com / admin1234)" };
       },
       logout() {
-        localStorage.removeItem("nexus_admin_session");
+        if (useStorage) {
+          try { localStorage.removeItem("nexus_admin_session"); } catch (e) {}
+        } else {
+          memoryDB.session = null;
+        }
       },
       isAuthenticated() {
-        const session = localStorage.getItem("nexus_admin_session");
-        if (!session) return false;
+        if (!useStorage) return !!memoryDB.session;
         try {
+          const session = localStorage.getItem("nexus_admin_session");
+          if (!session) return false;
           return JSON.parse(session).authenticated === true;
-        } catch {
+        } catch (e) {
           return false;
         }
       }
