@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="ko" class="h-full scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS Creative Team | Portfolio</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Tailwind Customization -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: '#2563eb',
+            'accent-hover': '#1d4ed8',
+            'card-bg': '#f9f9f9',
+            border: '#e5e5e5'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Noto Sans KR"', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Core Style Override -->
+  <style>
+    /* Custom thin scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cccccc;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #999999;
+    }
+    /* Hide scrollbar for category list scrolling on mobile */
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Hover scaling easing */
+    .transition-card {
+      transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    /* Overlay fade */
+    .hover-overlay {
+      transition: opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col bg-white text-[#111111] antialiased selection:bg-neutral-200 selection:text-neutral-900">
+
+  <!-- Core App Root -->
+  <div id="app" class="flex flex-col flex-1 min-h-screen"></div>
+
+  <!-- JavaScript Single File SPA Logic -->
+  <script>
+    // ==========================================
+    // 1. SEED DATA & LOCALSTORAGE DATABASE
+    // ==========================================
+    const DEFAULT_CATEGORIES = [
+      { id: "cat-design", name: "디자인", slug: "design", sort_order: 1, created_at: new Date().toISOString() },
+      { id: "cat-editing", name: "영상 편집", slug: "editing", sort_order: 2, created_at: new Date().toISOString() },
+      { id: "cat-sns-content", name: "SNS 콘텐츠", slug: "sns-content", sort_order: 3, created_at: new Date().toISOString() },
+      { id: "cat-branding", name: "브랜딩", slug: "branding", sort_order: 4, created_at: new Date().toISOString() }
+    ];
+
+    const DEFAULT_SETTINGS = {
+      site_title: "NEXUS Creative Team",
+      site_description: "디자인과 영상 편집을 통해 브랜드의 가치를 높이는 크리에이티브 파트너",
+      hero_title: "We Shape Ideas Into Impactful Visual Stories.",
+      hero_subtitle: "넥서스는 경계를 넘나드는 크리에이티브로 브랜드의 핵심 가치를 시각화합니다.",
+      contact_email: "contact@nexuscreative.com",
+      instagram_url: "https://instagram.com/nexus_creative",
+      behance_url: "https://behance.net/nexus_creative",
+      updated_at: new Date().toISOString()
+    };
+
+    const DEFAULT_PROJECTS = [
+      {
+        id: "proj-1",
+        title: "현대 모빌리티 브랜드 리브랜딩",
+        slug: "hyundai-mobility-rebranding",
+        category_id: "cat-branding",
+        client_name: "Hyundai Mobility",
+        year: 2025,
+        role: "Brand Identity Design & Guidelines",
+        description: "현대 모빌리티의 미래 지향적인 가치를 담기 위해 미니멀하면서도 하이테크적인 타이포그래피와 유기적인 그리드 시스템을 기반으로 리브랜딩을 진행하였습니다. 새로운 로고마크와 아이코닉한 네이비-네온 블루 컬러 에셋을 개발하여 오프라인 스테이셔너리부터 디지털 인터페이스까지 일관된 유저 경험을 설계했습니다.",
+        thumbnail_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200",
+        media_urls: [
+          "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1200",
+          "https://images.unsplash.com/photo-1541462608143-67571c6738dd?q=80&w=1200",
+          "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1200"
+        ],
+        video_url: "",
+        is_published: true,
+        is_featured: true,
+        sort_order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      {
+        id: "proj-2",
+        title: "글로벌 패션 테크 기업 2026 브랜드 필름",
+        slug: "fashion-tech-brand-film-2026",
+        category_id: "cat-editing",
+        client_name: "AURA Fashion Tech",
+        year: 2026,
+        role: "Video Editing & Color Grading",
+        description: "가상 의류 피팅 플랫폼 AURA의 2026 런칭 브랜드 필름입니다. 3D 의상 시뮬레이션 소스와 실제 모델 촬영본을 정교하게 매치 컷하여 가상과 현실이 연결되는 연출을 극대화했습니다. 강렬한 비트의 사운드트랙에 맞춘 속도감 있는 트랜지션과 모던한 색보정(Cyberpunk Teal & Amber)으로 역동적인 무드를 완성했습니다.",
+        thumbnail_url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=1200",
+        media_urls: [
+          "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=1200",
+          "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200"
+        ],
+        video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        is_published: true,
+        is_featured: true,
+        sort_order: 2,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      {
+        id: "proj-3",
+        title: "친환경 에코 라이프스타일 패키지 디자인",
+        slug: "eco-lifestyle-package-design",
+        category_id: "cat-design",
+        client_name: "Greenery Lab",
+        year: 2025,
+        role: "Package & Editorial Design",
+        description: "지속 가능한 환경을 지향하는 뷰티 & 홈 데코 브랜드 Greenery Lab의 친환경 패키지 디자인 프로젝트입니다. 재활용 펄프지와 콩기름 인쇄를 기준으로 하여 자연 그대로의 거칠고 포근한 질감을 살렸으며, 타이포그래피 위주의 심플한 라벨 디자인으로 불필요한 가공을 줄였습니다.",
+        thumbnail_url: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200",
+        media_urls: [
+          "https://images.unsplash.com/photo-1605263133935-96f33c89b495?q=80&w=1200",
+          "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200"
+        ],
+        video_url: "",
+        is_published: true,
+        is_featured: false,
+        sort_order: 3,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      {
+        id: "proj-4",
+        title: "신선식품 커머스 'FRESCO' 인스타그램 캠페인",
+        slug: "fresco-instagram-campaign",
+        category_id: "cat-sns-content",
+        client_name: "Fresco Corporation",
+        year: 2026,
+        role: "Art Direction & Social Content Creation",
+        description: "MZ세대를 타겟으로 한 식재료 큐레이션 서비스 FRESCO의 SNS 비주얼 가이드를 수립했습니다. 볼드한 네온 컬러 매치와 유머러스한 일러스트 팝업을 활용하여 스크롤을 멈추게 하는 크리에이티브를 개발했습니다. 한 달간의 캠페인 결과, 브랜드 오피셜 인스타그램 계정의 도달율이 전월 대비 140% 향상되었습니다.",
+        thumbnail_url: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1200",
+        media_urls: [
+          "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1200",
+          "https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=1200"
+        ],
+        video_url: "",
+        is_published: true,
+        is_featured: false,
+        sort_order: 4,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    ];
+
+    // Seed Database to LocalStorage
+    function initDatabase() {
+      if (!localStorage.getItem("nexus_categories")) {
+        localStorage.setItem("nexus_categories", JSON.stringify(DEFAULT_CATEGORIES));
+      }
+      if (!localStorage.getItem("nexus_settings")) {
+        localStorage.setItem("nexus_settings", JSON.stringify(DEFAULT_SETTINGS));
+      }
+      if (!localStorage.getItem("nexus_projects")) {
+        localStorage.setItem("nexus_projects", JSON.stringify(DEFAULT_PROJECTS));
+      }
+      if (!localStorage.getItem("nexus_inquiries")) {
+        localStorage.setItem("nexus_inquiries", JSON.stringify([]));
+      }
+    }
+
+    // Database access helpers
+    const db = {
+      getCategories() {
+        return JSON.parse(localStorage.getItem("nexus_categories")).sort((a, b) => a.sort_order - b.sort_order);
+      },
+      saveCategory(cat) {
+        const list = this.getCategories();
+        if (cat.id) {
+          const index = list.findIndex(c => c.id === cat.id);
+          if (index !== -1) list[index] = { ...list[index], ...cat };
+        } else {
+          cat.id = "cat-" + Date.now();
+          cat.created_at = new Date().toISOString();
+          list.push(cat);
+        }
+        localStorage.setItem("nexus_categories", JSON.stringify(list));
+        return cat;
+      },
+      deleteCategory(id) {
+        const list = this.getCategories();
+        const filtered = list.filter(c => c.id !== id);
+        localStorage.setItem("nexus_categories", JSON.stringify(filtered));
+      },
+      getProjects(includeDrafts = false) {
+        const list = JSON.parse(localStorage.getItem("nexus_projects")) || [];
+        const filtered = includeDrafts ? list : list.filter(p => p.is_published);
+        return filtered.sort((a, b) => a.sort_order - b.sort_order);
+      },
+      getProjectBySlug(slug) {
+        const list = this.getProjects(true);
+        return list.find(p => p.slug === slug && p.is_published) || null;
+      },
+      getProjectById(id) {
+        const list = this.getProjects(true);
+        return list.find(p => p.id === id) || null;
+      },
+      saveProject(proj) {
+        const list = this.getProjects(true);
+        proj.updated_at = new Date().toISOString();
+        if (proj.id) {
+          const index = list.findIndex(p => p.id === proj.id);
+          if (index !== -1) list[index] = { ...list[index], ...proj };
+        } else {
+          proj.id = "proj-" + Date.now();
+          proj.created_at = new Date().toISOString();
+          list.push(proj);
+        }
+        localStorage.setItem("nexus_projects", JSON.stringify(list));
+        return proj;
+      },
+      deleteProject(id) {
+        // Soft delete (setting is_published = false)
+        const list = this.getProjects(true);
+        const index = list.findIndex(p => p.id === id);
+        if (index !== -1) {
+          list[index].is_published = false;
+          localStorage.setItem("nexus_projects", JSON.stringify(list));
+        }
+      },
+      hardDeleteProject(id) {
+        const list = this.getProjects(true);
+        const filtered = list.filter(p => p.id !== id);
+        localStorage.setItem("nexus_projects", JSON.stringify(filtered));
+      },
+      getSettings() {
+        return JSON.parse(localStorage.getItem("nexus_settings")) || DEFAULT_SETTINGS;
+      },
+      saveSettings(settings) {
+        settings.updated_at = new Date().toISOString();
+        localStorage.setItem("nexus_settings", JSON.stringify(settings));
+        return settings;
+      },
+      getInquiries() {
+        return JSON.parse(localStorage.getItem("nexus_inquiries")) || [];
+      },
+      saveInquiry(inq) {
+        const list = this.getInquiries();
+        inq.id = "inq-" + Date.now();
+        inq.created_at = new Date().toISOString();
+        list.push(inq);
+        localStorage.setItem("nexus_inquiries", JSON.stringify(list));
+      },
+      deleteInquiry(id) {
+        const list = this.getInquiries();
+        const filtered = list.filter(inq => inq.id !== id);
+        localStorage.setItem("nexus_inquiries", JSON.stringify(filtered));
+      }
+    };
+
+    // Auth Helper
+    const MOCK_EMAIL = "admin@team.com";
+    const MOCK_PASSWORD = "admin1234";
+    const auth = {
+      login(email, password) {
+        if (email === MOCK_EMAIL && password === MOCK_PASSWORD) {
+          localStorage.setItem("nexus_admin_session", JSON.stringify({ email, authenticated: true, timestamp: Date.now() }));
+          return { success: true };
+        }
+        return { success: false, error: "이메일 또는 비밀번호가 틀립니다. (admin@team.com / admin1234)" };
+      },
+      logout() {
+        localStorage.removeItem("nexus_admin_session");
+      },
+      isAuthenticated() {
+        const session = localStorage.getItem("nexus_admin_session");
+        if (!session) return false;
+        try {
+          return JSON.parse(session).authenticated === true;
+        } catch {
+          return false;
+        }
+      }
+    };
+
+    // ==========================================
+    // 2. CLIENT-SIDE ROUTER
+    // ==========================================
+    function getRoute() {
+      const hash = window.location.hash || "#/";
+      
+      // Dynamic route matching: #/works/:slug
+      if (hash.startsWith("#/works/")) {
+        const slug = hash.replace("#/works/", "");
+        if (slug && !slug.includes("/")) {
+          return { name: "project-detail", params: { slug } };
+        }
+      }
+      
+      const routes = {
+        "#/": "home",
+        "#/works": "works",
+        "#/about": "about",
+        "#/contact": "contact",
+        "#/admin/login": "admin-login",
+        "#/admin/dashboard": "admin-dashboard",
+        "#/admin/projects": "admin-projects",
+        "#/admin/categories": "admin-categories",
+        "#/admin/settings": "admin-settings"
+      };
+      
+      return { name: routes[hash] || "not-found", params: {} };
+    }
+
+    // Main App Router Trigger
+    function router() {
+      const route = getRoute();
+      const appDiv = document.getElementById("app");
+      
+      // Admin Route Guard
+      if (route.name.startsWith("admin-") && route.name !== "admin-login") {
+        if (!auth.isAuthenticated()) {
+          window.location.hash = "#/admin/login";
+          return;
+        }
+      }
+
+      // Render Layout Wrapper
+      const isAdmin = route.name.startsWith("admin-");
+      let html = "";
+
+      if (isAdmin) {
+        // Layout: Admin CMS Layout with Sidebar
+        if (route.name === "admin-login") {
+          html = renderAdminLoginView();
+        } else {
+          html = `
+            <div class="flex min-h-screen bg-neutral-950 text-neutral-100 font-sans">
+              ${renderAdminSidebar()}
+              <main class="flex-grow p-8 sm:p-12 overflow-y-auto max-w-5xl mx-auto w-full">
+                <div id="admin-view-content"></div>
+              </main>
+            </div>
+          `;
+        }
+        appDiv.innerHTML = html;
+        
+        // Render Sub-Views
+        if (route.name === "admin-dashboard") renderAdminDashboardView();
+        if (route.name === "admin-projects") renderAdminProjectsView();
+        if (route.name === "admin-categories") renderAdminCategoriesView();
+        if (route.name === "admin-settings") renderAdminSettingsView();
+      } else {
+        // Layout: Main Visitor Layout with Header/Footer
+        html = `
+          ${renderHeader()}
+          <main class="flex-grow flex flex-col pt-20">
+            <div id="visitor-view-content"></div>
+          </main>
+          ${renderFooter()}
+        `;
+        appDiv.innerHTML = html;
+
+        // Render Sub-Views
+        if (route.name === "home") renderHomeView();
+        if (route.name === "works") renderWorksView();
+        if (route.name === "project-detail") renderProjectDetailView(route.params.slug);
+        if (route.name === "about") renderAboutView();
+        if (route.name === "contact") renderContactView();
+        if (route.name === "not-found") renderNotFoundView();
+      }
+
+      // Initialize icons dynamically
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    // ==========================================
+    // 3. VISITOR LAYOUT PARTS
+    // ==========================================
+    function renderHeader() {
+      const isLogged = auth.isAuthenticated();
+      const pathname = window.location.hash;
+      const worksActive = pathname === "#/works" || pathname.startsWith("#/works/");
+      const aboutActive = pathname === "#/about";
+      const contactActive = pathname === "#/contact";
+
+      return `
+        <header class="fixed top-0 left-0 z-50 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md">
+          <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
+            <a href="#/" class="group flex items-center gap-2">
+              <span class="text-2xl font-black tracking-tighter transition-colors group-hover:text-accent">NEXUS</span>
+              <span class="h-1.5 w-1.5 rounded-full bg-accent transition-transform group-hover:scale-150"></span>
+            </a>
+            <nav class="flex items-center gap-8 sm:gap-12">
+              <ul class="flex items-center gap-6 sm:gap-8 text-xs font-bold tracking-widest">
+                <li>
+                  <a href="#/works" class="relative py-2 transition-colors hover:text-black ${worksActive ? 'text-black font-black' : 'text-neutral-500'}">
+                    WORKS
+                    ${worksActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-black"></span>' : ''}
+                  </a>
+                </li>
+                <li>
+                  <a href="#/about" class="relative py-2 transition-colors hover:text-black ${aboutActive ? 'text-black font-black' : 'text-neutral-500'}">
+                    ABOUT
+                    ${aboutActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-black"></span>' : ''}
+                  </a>
+                </li>
+                <li>
+                  <a href="#/contact" class="relative py-2 transition-colors hover:text-black ${contactActive ? 'text-black font-black' : 'text-neutral-500'}">
+                    CONTACT
+                    ${contactActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-black"></span>' : ''}
+                  </a>
+                </li>
+              </ul>
+              ${isLogged ? `
+                <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
+                  <i data-lucide="settings" class="h-3 w-3"></i> ADMIN
+                </a>
+              ` : `
+                <a href="#/admin/login" class="text-[10px] font-bold tracking-wider text-neutral-500 hover:text-black">LOGIN</a>
+              `}
+            </nav>
+          </div>
+        </header>
+      `;
+    }
+
+    function renderFooter() {
+      const settings = db.getSettings();
+      return `
+        <footer class="w-full border-t border-neutral-100 bg-[#111111] text-white">
+          <div class="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-20">
+            <div class="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-8">
+              <div>
+                <h3 class="text-xl font-black tracking-tight text-white mb-4">NEXUS CREATIVE</h3>
+                <p class="text-sm text-neutral-400 max-w-md leading-relaxed font-light">${settings.site_description}</p>
+              </div>
+              <div class="flex flex-col gap-6 md:items-end">
+                <span class="text-xs font-bold tracking-widest text-neutral-400">GET IN TOUCH</span>
+                <a href="mailto:${settings.contact_email}" class="text-lg font-medium text-white hover:text-accent transition-colors flex items-center gap-1 group">
+                  ${settings.contact_email}
+                  <i data-lucide="arrow-up-right" class="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+                </a>
+                <div class="flex gap-6 mt-4">
+                  <a href="${settings.instagram_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-white transition-colors">INSTAGRAM</a>
+                  <a href="${settings.behance_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-white transition-colors">BEHANCE</a>
+                </div>
+              </div>
+            </div>
+            <div class="mt-16 border-t border-neutral-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span class="text-xs text-neutral-500 font-light">© ${new Date().getFullYear()} NEXUS. All rights reserved.</span>
+              <a href="#/admin/login" class="text-[10px] tracking-wider text-neutral-500 hover:text-neutral-300 font-medium">ADMIN CONSOLE</a>
+            </div>
+          </div>
+        </footer>
+      `;
+    }
+
+    // ==========================================
+    // 4. PORTFOLIO CARD RENDERER (univ.me Interaction)
+    // ==========================================
+    function renderPortfolioCard(p) {
+      const categories = db.getCategories();
+      const cat = categories.find(c => c.id === p.category_id);
+      const catName = cat ? cat.name : "PROJECT";
+
+      return `
+        <a href="#/works/${p.slug}" class="group relative block w-full aspect-[4/3] overflow-hidden bg-neutral-900">
+          ${p.thumbnail_url ? `
+            <img src="${p.thumbnail_url}" alt="" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
+          ` : `
+            <div class="flex h-full w-full items-center justify-center bg-neutral-800 text-neutral-500">No image</div>
+          `}
+          <!-- Hover Overlay: univ.me inspired -->
+          <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 hover-overlay flex flex-col justify-between p-6 sm:p-8">
+            <div class="flex justify-between items-center transform -translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">${catName}</span>
+              <span class="text-[10px] font-bold tracking-widest text-neutral-400">${p.year}</span>
+            </div>
+            <div class="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out delay-75">
+              <p class="text-[11px] font-bold tracking-widest text-neutral-400 uppercase mb-1">${p.client_name}</p>
+              <h3 class="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight">${p.title}</h3>
+              ${p.role ? `<p class="text-[10px] font-medium tracking-wide text-neutral-500 mt-2 font-mono">${p.role}</p>` : ''}
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    // ==========================================
+    // 5. VISITOR VIEWS IMPLEMENTATIONS
+    // ==========================================
+    
+    // Home View
+    function renderHomeView() {
+      const settings = db.getSettings();
+      const featured = db.getProjects().filter(p => p.is_featured).slice(0, 3);
+      
+      const contentDiv = document.getElementById("visitor-view-content");
+      
+      let featuredHtml = "";
+      if (featured.length > 0) {
+        featuredHtml = featured.map(p => renderPortfolioCard(p)).join("");
+      } else {
+        featuredHtml = `
+          <div class="col-span-full py-20 text-center text-sm text-neutral-400 border border-dashed border-neutral-200">
+            등록된 대표 프로젝트가 없습니다. 어드민 페이지에서 '대표 지정'을 선택해주세요.
+          </div>
+        `;
+      }
+
+      contentDiv.innerHTML = `
+        <!-- Hero Section -->
+        <section class="relative flex min-h-[70vh] flex-col justify-center px-6 sm:px-8 py-20 max-w-7xl mx-auto w-full">
+          <div class="max-w-4xl space-y-6 sm:space-y-8">
+            <div class="inline-flex items-center gap-2 rounded-full border border-neutral-100 bg-neutral-50 px-3 py-1 text-[10px] font-bold tracking-wider text-neutral-500 uppercase">
+              Creative Studio
+            </div>
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1]">${settings.hero_title}</h1>
+            <p class="text-base sm:text-lg text-neutral-500 max-w-2xl font-light leading-relaxed">${settings.hero_subtitle}</p>
+            <div class="pt-4 flex gap-4">
+              <a href="#/works" class="group flex items-center gap-2 rounded-full bg-black px-6 py-3.5 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
+                VIEW WORKS <i data-lucide="move-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
+              </a>
+              <a href="#/contact" class="flex items-center gap-2 rounded-full border border-neutral-200 px-6 py-3.5 text-xs font-bold tracking-widest text-black hover:bg-neutral-50 transition-colors">
+                TALK WITH US
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Featured Works Grid -->
+        <section class="w-full bg-[#f9f9f9] border-y border-neutral-100 py-24 sm:py-32">
+          <div class="max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
+              <div class="space-y-3">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">Featured Works</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">우리의 생각을 증명하는 대표 프로젝트</h2>
+              </div>
+              <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent transition-colors">
+                ALL PROJECTS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
+              </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              ${featuredHtml}
+            </div>
+          </div>
+        </section>
+
+        <!-- Brief Studio Intro -->
+        <section class="py-24 sm:py-32 max-w-7xl mx-auto w-full px-6 sm:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
+            <div class="lg:col-span-4 space-y-3">
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">ABOUT NEXUS</span>
+              <h2 class="text-3xl font-extrabold tracking-tight">We make it visual, <br class="hidden lg:block" />We make it real.</h2>
+            </div>
+            <div class="lg:col-span-8 space-y-6 text-base sm:text-lg text-neutral-600 leading-relaxed font-light">
+              <p>
+                넥서스는 기획자, 디자이너, 에디터가 한 팀으로 모여 가장 현대적이고 트렌디한 시각 언어로 메시지를 시각화하는 크리에이티브 그룹입니다.
+                단순히 아름다운 결과물에 그치지 않고, 클라이언트가 달성하고자 하는 비즈니스 골과 브랜드 본질을 깊이 관조하여 매력적인 시각 경험으로 풀어냅니다.
+              </p>
+              <p class="text-sm text-neutral-500">
+                우리는 브랜딩, 디자인 가이드, 소셜 채널 비주얼 어셋, 고화질 숏폼 및 브랜드 필름까지 브랜드와 소비자가 맞닿는 모든 시각적 터치포인트를 설계합니다.
+              </p>
+              <div class="pt-4">
+                <a href="#/about" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black border-b border-black pb-1 hover:text-accent hover:border-accent transition-colors">
+                  LEARN MORE ABOUT US <i data-lucide="arrow-right" class="h-3 w-3 transition-transform group-hover:translate-x-1"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CTA Banner -->
+        <section class="bg-black text-white py-24 sm:py-32 text-center">
+          <div class="max-w-7xl mx-auto px-6 sm:px-8 space-y-6 sm:space-y-8">
+            <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">WORK WITH US</span>
+            <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto leading-tight">
+              새로운 비주얼 스토리를 <br />함께 시작할 준비가 되셨나요?
+            </h2>
+            <p class="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto font-light leading-relaxed">
+              협업 문의부터 브랜드 분석 제안까지 언제든 열려있습니다. 넥서스와 함께 브랜드 가치를 극대화해보세요.
+            </p>
+            <div class="pt-4">
+              <a href="#/contact" class="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-xs font-bold tracking-widest text-black transition-transform hover:scale-105">
+                START A PROJECT <i data-lucide="move-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
+              </a>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    // Works View
+    let currentFilterSlug = "all"; // Persistent filter state
+    function renderWorksView() {
+      const categories = db.getCategories();
+      const projects = db.getProjects();
+      const contentDiv = document.getElementById("visitor-view-content");
+
+      // Filter logic
+      const filtered = currentFilterSlug === "all"
+        ? projects
+        : projects.filter(p => {
+            const cat = categories.find(c => c.slug === currentFilterSlug);
+            return p.category_id === (cat ? cat.id : null);
+          });
+
+      let gridHtml = "";
+      if (filtered.length > 0) {
+        gridHtml = filtered.map(p => renderPortfolioCard(p)).join("");
+      } else {
+        gridHtml = `
+          <div class="col-span-full py-32 text-center text-sm text-neutral-400 border border-dashed border-neutral-200 bg-neutral-50">
+            선택된 카테고리에 활성화된 프로젝트가 존재하지 않습니다.
+          </div>
+        `;
+      }
+
+      contentDiv.innerHTML = `
+        <div class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+          <!-- Page Title -->
+          <div class="space-y-4 mb-16 max-w-2xl">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR ARCHIVE</span>
+            <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">생각을 시각화한 프로젝트 목록</h1>
+            <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed">
+              브랜딩부터 영상 편집, 디지털 콘텐츠 디자인까지 넥서스가 수행한 다양한 필드의 작업물들을 탐색할 수 있습니다.
+            </p>
+          </div>
+
+          <!-- Category Filters Tab: univ.me inspired -->
+          <div class="border-b border-neutral-200 mb-12 overflow-x-auto scrollbar-none">
+            <div class="flex gap-8 pb-3 min-w-max">
+              <button onclick="setWorksFilter('all')" class="relative pb-3 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === 'all' ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
+                ALL
+                ${currentFilterSlug === 'all' ? '<span class="absolute bottom-[-1px] left-0 h-[2px] w-full bg-black"></span>' : ''}
+              </button>
+              ${categories.map(cat => `
+                <button onclick="setWorksFilter('${cat.slug}')" class="relative pb-3 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === cat.slug ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
+                  ${cat.name}
+                  ${currentFilterSlug === cat.slug ? '<span class="absolute bottom-[-1px] left-0 h-[2px] w-full bg-black"></span>' : ''}
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+          <!-- Projects Portfolio Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            ${gridHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    // Triggered when categories filter tabs are clicked
+    window.setWorksFilter = function(slug) {
+      currentFilterSlug = slug;
+      renderWorksView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    // Project Detail View
+    function renderProjectDetailView(slug) {
+      const project = db.getProjectBySlug(slug);
+      const contentDiv = document.getElementById("visitor-view-content");
+
+      if (!project) {
+        contentDiv.innerHTML = `
+          <div class="mx-auto max-w-xl py-32 text-center space-y-6">
+            <h2 class="text-2xl font-black">프로젝트를 찾을 수 없습니다</h2>
+            <p class="text-sm text-neutral-500">삭제되었거나 주소가 변경된 비공개 프로젝트일 수 있습니다.</p>
+            <a href="#/works" class="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-bold tracking-widest text-white">
+              <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i> BACK TO WORKS
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Load category name
+      const categories = db.getCategories();
+      const cat = categories.find(c => c.id === project.category_id);
+      const catName = cat ? cat.name : "PROJECT";
+
+      // Parse YouTube URL to embed
+      const getEmbedVideoUrl = (url) => {
+        if (!url) return "";
+        if (url.includes("embed/")) return url;
+        let videoId = "";
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+          videoId = match[2];
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+        return url;
+      };
+      const embedUrl = getEmbedVideoUrl(project.video_url);
+
+      // Related recommendations
+      const related = db.getProjects()
+        .filter(p => p.category_id === project.category_id && p.id !== project.id)
+        .slice(0, 3);
+      
+      let relatedHtml = "";
+      if (related.length > 0) {
+        relatedHtml = `
+          <section class="border-t border-neutral-100 py-24 max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="flex items-end justify-between mb-12">
+              <div class="space-y-3">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">EXPLORE MORE</span>
+                <h2 class="text-2xl font-extrabold tracking-tight">관련 프로젝트</h2>
+              </div>
+              <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent transition-colors">
+                ALL WORKS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
+              </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              ${related.map(p => renderPortfolioCard(p)).join("")}
+            </div>
+          </section>
+        `;
+      }
+
+      contentDiv.innerHTML = `
+        <!-- Cover Banner -->
+        <section class="relative w-full aspect-[21/9] min-h-[300px] bg-neutral-900 overflow-hidden">
+          ${project.thumbnail_url ? `<img src="${project.thumbnail_url}" alt="" class="w-full h-full object-cover opacity-75" />` : ''}
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-6 sm:p-12">
+            <div class="max-w-7xl mx-auto w-full space-y-2">
+              <a href="#/works" class="inline-flex items-center gap-1 text-[10px] font-bold tracking-widest text-neutral-300 hover:text-white uppercase transition-colors mb-4">
+                <i data-lucide="arrow-left" class="h-3 w-3"></i> BACK TO ARCHIVE
+              </a>
+              <div><span class="inline-block text-[10px] font-bold tracking-widest text-accent uppercase">${catName}</span></div>
+              <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">${project.title}</h1>
+            </div>
+          </div>
+        </section>
+
+        <!-- Details Info -->
+        <section class="max-w-7xl mx-auto px-6 py-16 sm:px-8 sm:py-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16">
+            <!-- Sidebar info -->
+            <div class="lg:col-span-4 space-y-8 border-l border-neutral-200 pl-6 lg:order-2">
+              <div>
+                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">CLIENT</span>
+                <p class="text-base font-bold">${project.client_name}</p>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">YEAR</span>
+                <p class="text-base font-bold flex items-center gap-2">
+                  <i data-lucide="calendar" class="h-4 w-4 text-neutral-400"></i> ${project.year}
+                </p>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">ROLE & SCOPE</span>
+                <p class="text-base font-bold flex items-center gap-2">
+                  <i data-lucide="user" class="h-4 w-4 text-neutral-400"></i> ${project.role || "디자인 & 제작"}
+                </p>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="lg:col-span-8 space-y-8 lg:order-1">
+              <div class="space-y-4">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">PROJECT OVERVIEW</span>
+                <h2 class="text-2xl font-bold tracking-tight">프로젝트 소개</h2>
+              </div>
+              <p class="text-base sm:text-lg text-neutral-600 font-light leading-relaxed whitespace-pre-line">${project.description}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Video Player -->
+        ${embedUrl ? `
+          <section class="w-full bg-[#111111] py-16 sm:py-24">
+            <div class="max-w-5xl mx-auto px-6">
+              <div class="space-y-2 mb-8 text-center">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">VIDEO IN ACTION</span>
+                <h3 class="text-xl sm:text-2xl font-bold text-white tracking-tight">프로젝트 필름</h3>
+              </div>
+              <div class="relative w-full aspect-video bg-neutral-900 shadow-2xl">
+                <iframe src="${embedUrl}" title="Video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="absolute inset-0 w-full h-full border-0"></iframe>
+              </div>
+            </div>
+          </section>
+        ` : ''}
+
+        <!-- Image Gallery Showcase -->
+        ${project.media_urls && project.media_urls.length > 0 ? `
+          <section class="w-full border-t border-neutral-100 py-24 bg-[#f9f9f9]">
+            <div class="max-w-7xl mx-auto px-6 sm:px-8">
+              <div class="space-y-3 mb-12">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">PROJECT MEDIA</span>
+                <h2 class="text-2xl font-bold tracking-tight">미디어 갤러리</h2>
+              </div>
+              <div class="flex flex-col gap-8 sm:gap-12">
+                ${project.media_urls.map(url => `
+                  <div class="w-full bg-white border border-neutral-200 overflow-hidden">
+                    <img src="${url}" alt="" class="w-full h-auto object-contain" />
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </section>
+        ` : ''}
+
+        <!-- Related Block -->
+        ${relatedHtml}
+      `;
+    }
+
+    // About View
+    function renderAboutView() {
+      const contentDiv = document.getElementById("visitor-view-content");
+      contentDiv.innerHTML = `
+        <section class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+          <div class="max-w-3xl space-y-6">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WHO WE ARE</span>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-[1.1]">우리는 브랜드의 감각을 깨우는 크리에이터 팀입니다.</h1>
+            <p class="text-base sm:text-lg text-neutral-500 font-light leading-relaxed">
+              넥서스는 차가운 텍스트 속 브랜드 가치를 가장 뜨겁고 트렌디한 시각 언어로 통역합니다.
+              기획에서 제작, 숏폼 모션 그래픽, SNS 브랜딩 가이드라인까지 올인원 디자인 제작 시스템을 제공합니다.
+            </p>
+          </div>
+        </section>
+
+        <!-- Core Strengths -->
+        <section class="bg-[#f9f9f9] border-y border-neutral-100 py-24 sm:py-32">
+          <div class="max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="max-w-2xl space-y-3 mb-16">
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR STRENGTHS</span>
+              <h2 class="text-3xl font-extrabold tracking-tight">넥서스가 일하는 방식과 경쟁력</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
+                <div class="p-3 bg-[#f9f9f9] inline-block rounded-lg text-accent"><i data-lucide="sparkles" class="h-6 w-6"></i></div>
+                <div class="space-y-3">
+                  <h3 class="text-lg font-extrabold tracking-tight">통합적 크리에이티브 시너지</h3>
+                  <p class="text-sm text-neutral-500 font-light leading-relaxed">
+                    기획자와 브랜드 디자이너, 영상 모션 에디터가 긴밀히 협력하여 디자인과 미디어가 분리되지 않는 일관된 경험을 도출합니다.
+                  </p>
+                </div>
+              </div>
+              <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
+                <div class="p-3 bg-[#f9f9f9] inline-block rounded-lg text-accent"><i data-lucide="zap" class="h-6 w-6"></i></div>
+                <div class="space-y-3">
+                  <h3 class="text-lg font-extrabold tracking-tight">트렌디한 비주얼 센스</h3>
+                  <p class="text-sm text-neutral-500 font-light leading-relaxed">
+                    매일 변화하는 디지털 비주얼 트렌드를 정교하게 분석하고, 타겟의 감각을 직관적으로 관통할 수 있는 모던한 룩앤필을 구현합니다.
+                  </p>
+                </div>
+              </div>
+              <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
+                <div class="p-3 bg-[#f9f9f9] inline-block rounded-lg text-accent"><i data-lucide="star" class="h-6 w-6"></i></div>
+                <div class="space-y-3">
+                  <h3 class="text-lg font-extrabold tracking-tight">철저한 비즈니스 지향성</h3>
+                  <p class="text-sm text-neutral-500 font-light leading-relaxed">
+                    단순한 시각적 장식을 배제하고, 클라이언트사의 마케팅 목표와 신규 유입 전환율을 실질적으로 극대화하는 솔루션을 제시합니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Processes -->
+        <section class="py-24 sm:py-32 max-w-7xl mx-auto px-6 sm:px-8">
+          <div class="max-w-2xl space-y-3 mb-16">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK PROCESS</span>
+            <h2 class="text-3xl font-extrabold tracking-tight">협업 프로세스</h2>
+            <p class="text-sm text-neutral-400 font-light">넥서스는 투명하고 효율적인 4단계 시스템을 준수합니다.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="space-y-4 border-t border-neutral-200 pt-6">
+              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">01</span>
+              <h3 class="text-base font-extrabold tracking-tight">Briefing & Analysis</h3>
+              <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">대면 또는 비대면 브리핑을 통해 브랜드의 핵심 고민, 예산, 목표 타겟, 벤치마킹 스타일을 입체적으로 추출합니다.</p>
+            </div>
+            <div class="space-y-4 border-t border-neutral-200 pt-6">
+              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">02</span>
+              <h3 class="text-base font-extrabold tracking-tight">Visual Concepting</h3>
+              <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">정의된 무드보드와 컬러 팔레트, 영상 시놉시스를 기획하여 크리에이티브 방향성을 일차적으로 합의합니다.</p>
+            </div>
+            <div class="space-y-4 border-t border-neutral-200 pt-6">
+              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">03</span>
+              <h3 class="text-base font-extrabold tracking-tight">Production & Craft</h3>
+              <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">전문 디자이너와 영상 에디터가 본 제작에 착수하며, 최첨단 툴과 정교한 기법으로 디테일을 완성해갑니다.</p>
+            </div>
+            <div class="space-y-4 border-t border-neutral-200 pt-6">
+              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">04</span>
+              <h3 class="text-base font-extrabold tracking-tight">Refinement & Delivery</h3>
+              <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">클라이언트 피드백을 신속하게 통합 수정한 후, 웹 배포 혹은 고화질 미디어 원본 파일 포맷으로 정밀 인도합니다.</p>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    // Contact View
+    function renderContactView() {
+      const settings = db.getSettings();
+      const contentDiv = document.getElementById("visitor-view-content");
+
+      contentDiv.innerHTML = `
+        <div class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            <!-- Left Info -->
+            <div class="lg:col-span-5 space-y-12">
+              <div class="space-y-4">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">TALK TO US</span>
+                <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">브랜드의 새로운 도약을 함께 준비합니다.</h1>
+                <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed">
+                  신규 프로젝트 의뢰, 예산별 가견적 분석, 단기 에디팅 아웃소싱 파트너십 제안 등 어떤 문의든 환영합니다.
+                </p>
+              </div>
+
+              <div class="space-y-6 pt-6 border-t border-neutral-200">
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-[#f9f9f9] rounded-lg text-neutral-600"><i data-lucide="mail" class="h-5 w-5"></i></div>
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-bold tracking-widest text-neutral-400 block uppercase">DIRECT EMAIL</span>
+                    <a href="mailto:${settings.contact_email}" class="text-base font-bold hover:text-accent transition-colors">${settings.contact_email}</a>
+                  </div>
+                </div>
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-[#f9f9f9] rounded-lg text-neutral-600">
+                    <svg class="h-5 w-5 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </div>
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-bold tracking-widest text-neutral-400 block uppercase">INSTAGRAM</span>
+                    <a href="${settings.instagram_url}" target="_blank" class="text-base font-bold hover:text-accent flex items-center gap-1 transition-colors">
+                      Instagram Feed <i data-lucide="external-link" class="h-3 w-3"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="flex items-start gap-4">
+                  <div class="p-3 bg-[#f9f9f9] rounded-lg text-neutral-600">
+                    <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z" />
+                    </svg>
+                  </div>
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-bold tracking-widest text-neutral-400 block uppercase">BEHANCE PORTFOLIO</span>
+                    <a href="${settings.behance_url}" target="_blank" class="text-base font-bold hover:text-accent flex items-center gap-1 transition-colors">
+                      Behance Profile <i data-lucide="external-link" class="h-3 w-3"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Form -->
+            <div class="lg:col-span-7 bg-[#f9f9f9] border border-neutral-200 p-8 sm:p-10 rounded-xl relative overflow-hidden">
+              <div id="contact-success-panel" class="absolute inset-0 bg-white/95 backdrop-blur-sm hidden flex-col items-center justify-center text-center p-6 z-10">
+                <i data-lucide="check-circle" class="h-14 w-14 text-accent mb-4"></i>
+                <h3 class="text-xl font-bold tracking-tight mb-2">문의가 접수되었습니다</h3>
+                <p class="text-sm text-neutral-500 max-w-sm font-light leading-relaxed">
+                  성공적으로 송신 완료되었습니다. 기재해주신 이메일 주소로 검토 후 영업일 기준 48시간 이내에 답신드리겠습니다.
+                </p>
+              </div>
+
+              <div class="space-y-6">
+                <div class="space-y-1">
+                  <h2 class="text-xl font-bold tracking-tight">프로젝트 의뢰 폼</h2>
+                  <p class="text-xs text-neutral-400 font-light">빠르고 정확한 피드백을 위해 꼼꼼히 작성해 주세요.</p>
+                </div>
+                <form id="visitor-inquiry-form" onsubmit="submitContactForm(event)" class="space-y-5">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">담당자명 / 회사명 *</label>
+                      <input type="text" id="inq-name" required placeholder="홍길동 (넥서스 주식회사)" class="w-full bg-white border border-neutral-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent" />
+                    </div>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">회신받을 이메일 *</label>
+                      <input type="email" id="inq-email" required placeholder="yourname@domain.com" class="w-full bg-white border border-neutral-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent" />
+                    </div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">문의 목적 / 제목 *</label>
+                    <input type="text" id="inq-subject" required placeholder="2026 브랜드 패션 필름 비디오 에디팅 의뢰 건" class="w-full bg-white border border-neutral-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent" />
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase">의뢰 예산 / 세부 상세 설명 *</label>
+                    <textarea id="inq-message" required rows="5" placeholder="예산 범위, 핵심 일정 가이드라인, 구체적인 작업 분량 및 선호 스타일 등을 함께 기재해주시면 더 디테일한 제안이 가능합니다." class="w-full bg-white border border-neutral-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-accent resize-none"></textarea>
+                  </div>
+                  <button type="submit" id="inq-submit-btn" class="w-full bg-black text-white font-bold text-xs tracking-widest py-4 rounded-lg hover:bg-neutral-800 transition-colors uppercase cursor-pointer">
+                    SEND INQUIRY
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Submit inquiry form handler
+    window.submitContactForm = function(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById("inq-submit-btn");
+      submitBtn.disabled = true;
+      submitBtn.innerText = "SENDING...";
+
+      const name = document.getElementById("inq-name").value;
+      const email = document.getElementById("inq-email").value;
+      const subject = document.getElementById("inq-subject").value;
+      const message = document.getElementById("inq-message").value;
+
+      setTimeout(() => {
+        db.saveInquiry({ name, email, subject, message });
+        
+        // Show success
+        const panel = document.getElementById("contact-success-panel");
+        panel.classList.remove("hidden");
+        panel.classList.add("flex");
+        
+        // Reset form
+        document.getElementById("visitor-inquiry-form").reset();
+
+        setTimeout(() => {
+          panel.classList.remove("flex");
+          panel.classList.add("hidden");
+          submitBtn.disabled = false;
+          submitBtn.innerText = "SEND INQUIRY";
+        }, 5000);
+      }, 1200);
+    };
+
+    function renderNotFoundView() {
+      const contentDiv = document.getElementById("visitor-view-content");
+      contentDiv.innerHTML = `
+        <div class="mx-auto max-w-xl py-32 text-center space-y-6">
+          <h2 class="text-6xl font-black text-accent">404</h2>
+          <h3 class="text-xl font-bold tracking-tight">페이지를 찾을 수 없습니다</h3>
+          <p class="text-sm text-neutral-500">지정된 주소의 페이지가 존재하지 않거나 이전되었습니다.</p>
+          <a href="#/" class="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-bold tracking-widest text-white">홈으로 이동</a>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // 6. ADMINISTRATIVE CMS VIEWS & LAYOUTS
+    // ==========================================
+    
+    // Admin Sidebar Layout component
+    function renderAdminSidebar() {
+      const pathname = window.location.hash;
+      const isDashboard = pathname === "#/admin/dashboard";
+      const isProjects = pathname.startsWith("#/admin/projects");
+      const isCategories = pathname === "#/admin/categories";
+      const isSettings = pathname === "#/admin/settings";
+
+      return `
+        <aside class="w-64 border-r border-neutral-800 bg-neutral-900 flex flex-col justify-between p-6 shrink-0">
+          <div class="space-y-8">
+            <div class="flex items-center justify-between border-b border-neutral-800 pb-5">
+              <div>
+                <span class="text-xs font-bold text-neutral-500 tracking-wider">CMS SYSTEM</span>
+                <h2 class="text-lg font-black tracking-tighter text-white">NEXUS ADMIN</h2>
+              </div>
+              <a href="#/" title="Go to Live Site" class="p-2 rounded-lg bg-neutral-800 hover:bg-accent transition-colors">
+                <i data-lucide="home" class="h-4 w-4 text-white"></i>
+              </a>
+            </div>
+
+            <nav class="space-y-1">
+              <a href="#/admin/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isDashboard ? 'bg-accent text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}">
+                <i data-lucide="layout-dashboard" class="h-4 w-4"></i> 대시보드
+              </a>
+              <a href="#/admin/projects" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isProjects ? 'bg-accent text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}">
+                <i data-lucide="folder-kanban" class="h-4 w-4"></i> 프로젝트 관리
+              </a>
+              <a href="#/admin/categories" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isCategories ? 'bg-accent text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}">
+                <i data-lucide="tags" class="h-4 w-4"></i> 카테고리 관리
+              </a>
+              <a href="#/admin/settings" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isSettings ? 'bg-accent text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}">
+                <i data-lucide="settings" class="h-4 w-4"></i> 전역 사이트 설정
+              </a>
+            </nav>
+          </div>
+
+          <div class="border-t border-neutral-800 pt-5 space-y-2">
+            <a href="#/" class="flex items-center gap-3 px-4 py-3 text-sm text-neutral-400 hover:text-white transition-colors">
+              <i data-lucide="arrow-left" class="h-4 w-4"></i> 사용자 페이지로
+            </a>
+            <button onclick="handleAdminLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-950/20 hover:text-red-300 transition-colors cursor-pointer text-left">
+              <i data-lucide="log-out" class="h-4 w-4"></i> 로그아웃
+            </button>
+          </div>
+        </aside>
+      `;
+    }
+
+    // Admin Logout Trigger
+    window.handleAdminLogout = function() {
+      auth.logout();
+      window.location.hash = "#/admin/login";
+    };
+
+    // Admin Login View
+    function renderAdminLoginView() {
+      return `
+        <div class="min-h-screen bg-neutral-950 flex items-center justify-center w-full px-4">
+          <div class="w-full max-w-md p-8 bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl space-y-6">
+            <div class="space-y-2 text-center">
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">NEXUS PORTFOLIO CMS</span>
+              <h1 class="text-2xl font-black text-white tracking-tight">관리자 로그인</h1>
+              <p class="text-xs text-neutral-400 font-light">등록된 어드민 메일과 패스워드로 로그인해 주세요.</p>
+            </div>
+            
+            <div id="login-error-alert" class="p-3.5 bg-red-950/20 border border-red-800 rounded-lg text-xs text-red-300 font-medium hidden"></div>
+
+            <form onsubmit="handleAdminLoginSubmit(event)" class="space-y-4">
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
+                  <i data-lucide="mail" class="h-3.5 w-3.5"></i> 이메일 주소
+                </label>
+                <input type="email" id="login-email" required placeholder="admin@team.com" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase flex items-center gap-1">
+                  <i data-lucide="lock" class="h-3.5 w-3.5"></i> 비밀번호
+                </label>
+                <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent" />
+              </div>
+              <button type="submit" class="w-full bg-accent hover:bg-accent-hover text-white font-bold text-xs tracking-widest py-3.5 rounded-lg transition-transform active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer uppercase">
+                LOGIN <i data-lucide="arrow-right" class="h-4 w-4"></i>
+              </button>
+            </form>
+
+            <div class="pt-2 border-t border-neutral-800/80 text-center">
+              <p class="text-[10px] text-neutral-500 font-light leading-relaxed">
+                로컬 데모 계정 정보: <br />
+                <strong class="text-neutral-400">admin@team.com</strong> / <strong class="text-neutral-400">admin1234</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Submit admin credentials handler
+    window.handleAdminLoginSubmit = function(e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const pass = document.getElementById("login-password").value;
+      const alertDiv = document.getElementById("login-error-alert");
+
+      const res = auth.login(email, pass);
+      if (res.success) {
+        window.location.hash = "#/admin/projects";
+      } else {
+        alertDiv.innerText = res.error;
+        alertDiv.classList.remove("hidden");
+      }
+    };
+
+    // Admin Dashboard View
+    function renderAdminDashboardView() {
+      const container = document.getElementById("admin-view-content");
+      const projects = db.getProjects(true);
+      const categories = db.getCategories();
+      const settings = db.getSettings();
+      const inquiries = db.getInquiries().sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      const totalProj = projects.length;
+      const publishedProj = projects.filter(p => p.is_published).length;
+
+      container.innerHTML = `
+        <div class="space-y-10 animate-fade-in">
+          <!-- Header -->
+          <div class="border-b border-neutral-800 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OVERVIEW</span>
+              <h1 class="text-2xl font-black text-white tracking-tight">대시보드</h1>
+            </div>
+            <div class="text-xs text-neutral-400 font-light bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2">
+              최근 사이트 업데이트: ${new Date(settings.updated_at).toLocaleDateString()}
+            </div>
+          </div>
+
+          <!-- Quick Stats Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl flex flex-col justify-between space-y-4 shadow-lg hover:border-neutral-700 transition-colors">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-xs text-neutral-400 font-bold tracking-tight block mb-1">전체 프로젝트</span>
+                  <span class="text-3xl font-black text-white">${totalProj}</span>
+                </div>
+                <div class="p-3 bg-neutral-950 border border-neutral-800 rounded-lg"><i data-lucide="folder-kanban" class="h-5 w-5 text-blue-400"></i></div>
+              </div>
+              <div class="flex justify-between items-center border-t border-neutral-800/80 pt-4 text-xs">
+                <span class="text-neutral-500">공개: ${publishedProj}개 / 비공개: ${totalProj - publishedProj}개</span>
+                <a href="#/admin/projects" class="text-accent hover:text-blue-300 font-bold flex items-center gap-0.5">바로가기 <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
+              </div>
+            </div>
+            <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl flex flex-col justify-between space-y-4 shadow-lg hover:border-neutral-700 transition-colors">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-xs text-neutral-400 font-bold tracking-tight block mb-1">등록된 카테고리</span>
+                  <span class="text-3xl font-black text-white">${categories.length}</span>
+                </div>
+                <div class="p-3 bg-neutral-950 border border-neutral-800 rounded-lg"><i data-lucide="tags" class="h-5 w-5 text-emerald-400"></i></div>
+              </div>
+              <div class="flex justify-between items-center border-t border-neutral-800/80 pt-4 text-xs">
+                <span class="text-neutral-500">필터 분류 바 정렬 정렬</span>
+                <a href="#/admin/categories" class="text-accent hover:text-blue-300 font-bold flex items-center gap-0.5">바로가기 <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
+              </div>
+            </div>
+            <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl flex flex-col justify-between space-y-4 shadow-lg hover:border-neutral-700 transition-colors">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-xs text-neutral-400 font-bold tracking-tight block mb-1">고객 문의</span>
+                  <span class="text-3xl font-black text-white">${inquiries.length}</span>
+                </div>
+                <div class="p-3 bg-neutral-950 border border-neutral-800 rounded-lg"><i data-lucide="message-square" class="h-5 w-5 text-indigo-400"></i></div>
+              </div>
+              <div class="flex justify-between items-center border-t border-neutral-800/80 pt-4 text-xs">
+                <span class="text-neutral-500">웹 의뢰 폼 수신함</span>
+                <a href="#inquiries-box" class="text-accent hover:text-blue-300 font-bold flex items-center gap-0.5">목록보기 <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Settings Block -->
+          <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl shadow-lg space-y-4">
+            <h2 class="text-sm font-bold text-white tracking-wide border-b border-neutral-800/80 pb-3 flex items-center gap-2">
+              <i data-lucide="file-text" class="h-4 w-4 text-neutral-400"></i> 활성 사이트 메타 정보
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <span class="text-neutral-500 block mb-1">사이트 타이틀</span>
+                <p class="text-neutral-300 font-medium">${settings.site_title}</p>
+              </div>
+              <div>
+                <span class="text-neutral-500 block mb-1">대표 이메일</span>
+                <p class="text-neutral-300 font-medium">${settings.contact_email}</p>
+              </div>
+              <div class="sm:col-span-2">
+                <span class="text-neutral-500 block mb-1">히어로 헤드라인</span>
+                <p class="text-neutral-300 font-medium">${settings.hero_title}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inquiries Inbox -->
+          <div id="inquiries-box" class="bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6 border-b border-neutral-800 flex justify-between items-center">
+              <h2 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                <i data-lucide="message-square" class="h-4 w-4 text-neutral-400"></i> 고객 문의 수신함
+              </h2>
+              <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-900 font-bold px-2 py-0.5 rounded-full">Total ${inquiries.length}</span>
+            </div>
+            
+            ${inquiries.length > 0 ? `
+              <div class="divide-y divide-neutral-800">
+                ${inquiries.map(inq => `
+                  <div class="p-6 space-y-4 hover:bg-neutral-900/50 transition-colors">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div class="space-y-1">
+                        <span class="text-xs font-black text-white">${inq.subject}</span>
+                        <div class="flex items-center gap-3 text-[10px] text-neutral-400 font-light">
+                          <span class="font-bold text-neutral-300">${inq.name}</span>
+                          <span>|</span>
+                          <a href="mailto:${inq.email}" class="hover:text-accent flex items-center gap-0.5"><i data-lucide="mail" class="h-3 w-3"></i> ${inq.email}</a>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-4">
+                        <span class="text-[10px] text-neutral-500 font-mono flex items-center gap-1">
+                          <i data-lucide="calendar" class="h-3 w-3"></i> ${new Date(inq.created_at).toLocaleString()}
+                        </span>
+                        <button onclick="deleteDashboardInquiry('${inq.id}')" class="text-[10px] font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer">삭제</button>
+                      </div>
+                    </div>
+                    <p class="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light whitespace-pre-line bg-neutral-950 p-4 border border-neutral-800/80 rounded-lg">${inq.message}</p>
+                  </div>
+                `).join("")}
+              </div>
+            ` : `
+              <div class="py-16 text-center text-xs text-neutral-500">수신된 고객 문의가 존재하지 않습니다.</div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    // Delete inquiry trigger from dashboard
+    window.deleteDashboardInquiry = function(id) {
+      if (confirm("이 문의 내역을 삭제하시겠습니까?")) {
+        db.deleteInquiry(id);
+        renderAdminDashboardView();
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+    };
+
+    // Admin Projects View
+    let currentEditProjectId = null; // null for Create, id for Update
+    function renderAdminProjectsView() {
+      const container = document.getElementById("admin-view-content");
+      const projects = db.getProjects(true);
+      const categories = db.getCategories();
+
+      container.innerHTML = `
+        <div class="space-y-8 animate-fade-in">
+          <!-- Header -->
+          <div class="border-b border-neutral-800 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">CMS PORTFOLIO</span>
+              <h1 class="text-2xl font-black text-white tracking-tight">프로젝트 관리</h1>
+            </div>
+            <button onclick="openProjectModal(null)" class="bg-accent hover:bg-accent-hover text-white font-bold text-xs tracking-widest px-4.5 py-3 rounded-lg flex items-center gap-1 transition-colors uppercase cursor-pointer">
+              <i data-lucide="plus" class="h-4 w-4"></i> 신규 등록
+            </button>
+          </div>
+
+          <!-- Projects Table Grid -->
+          <div class="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-neutral-800 bg-neutral-950 text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
+                    <th class="p-4 pl-6 w-24">대표 썸네일</th>
+                    <th class="p-4">프로젝트 정보</th>
+                    <th className="p-4">카테고리</th>
+                    <th class="p-4 text-center">공개 설정</th>
+                    <th class="p-4 text-center">대표 지정</th>
+                    <th class="p-4 text-right pr-6 w-40">관리 작업</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-800 text-xs">
+                  ${projects.map(proj => {
+                    const cat = categories.find(c => c.id === proj.category_id);
+                    return `
+                      <tr class="hover:bg-neutral-950/40 transition-colors">
+                        <td class="p-4 pl-6">
+                          <div class="h-12 w-16 bg-neutral-800 rounded border border-neutral-700/80 overflow-hidden relative">
+                            ${proj.thumbnail_url ? `<img src="${proj.thumbnail_url}" alt="" class="h-full w-full object-cover" />` : '<span class="text-[8px] text-neutral-500 flex items-center justify-center h-full">No image</span>'}
+                          </div>
+                        </td>
+                        <td class="p-4">
+                          <div class="space-y-1">
+                            <p class="font-extrabold text-neutral-200 text-sm leading-tight">${proj.title}</p>
+                            <div class="flex items-center gap-3 text-[10px] text-neutral-400 font-light">
+                              <span class="font-bold text-neutral-300">${proj.client_name}</span>
+                              <span>|</span>
+                              <span>${proj.year}년</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="p-4">
+                          <span class="text-[10px] font-bold px-2.5 py-1 bg-neutral-950 border border-neutral-800 rounded text-neutral-300">
+                            ${cat ? cat.name : '기타'}
+                          </span>
+                        </td>
+                        <td class="p-4 text-center">
+                          <button onclick="toggleProjPublished('${proj.id}', ${proj.is_published})" class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide border cursor-pointer transition-all ${proj.is_published ? 'bg-emerald-950/20 border-emerald-800 text-emerald-400' : 'bg-neutral-950 border-neutral-800 text-neutral-500'}">
+                            ${proj.is_published ? '<i data-lucide="eye" class="h-3 w-3"></i> 공개중' : '<i data-lucide="eye-off" class="h-3 w-3"></i> 비공개'}
+                          </button>
+                        </td>
+                        <td class="p-4 text-center">
+                          <button onclick="toggleProjFeatured('${proj.id}', ${proj.is_featured})" class="p-1.5 rounded-lg border cursor-pointer transition-all ${proj.is_featured ? 'bg-amber-950/20 border-amber-800 text-amber-400' : 'bg-neutral-950 border-neutral-800 text-neutral-600 hover:text-neutral-400'}">
+                            <i data-lucide="star" class="h-4 w-4 fill-current"></i>
+                          </button>
+                        </td>
+                        <td class="p-4 text-right pr-6 space-x-1.5">
+                          <button onclick="openProjectModal('${proj.id}')" class="p-2 bg-neutral-850 hover:bg-neutral-800 text-neutral-300 hover:text-white rounded border border-neutral-850 transition-colors cursor-pointer"><i data-lucide="edit-2" class="h-3.5 w-3.5"></i></button>
+                          <button onclick="softDeleteProj('${proj.id}')" class="p-2 bg-neutral-850 hover:bg-amber-950/30 text-neutral-400 hover:text-amber-300 rounded border border-neutral-850 hover:border-amber-900 transition-colors cursor-pointer" title="임시 비공개 (Soft Delete)"><i data-lucide="eye-off" class="h-3.5 w-3.5"></i></button>
+                          <button onclick="hardDeleteProj('${proj.id}')" class="p-2 bg-neutral-850 hover:bg-red-950/30 text-neutral-400 hover:text-red-400 rounded border border-neutral-850 hover:border-red-900 transition-colors cursor-pointer" title="영구 삭제"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CRUD Dialog Modal -->
+        <div id="project-form-modal" class="fixed inset-0 z-50 items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
+          <div class="bg-neutral-900 border border-neutral-800 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+            
+            <!-- Modal Header -->
+            <div class="flex justify-between items-start border-b border-neutral-800 pb-4">
+              <div>
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">CMS EDITOR</span>
+                <h2 id="modal-title" class="text-xl font-bold text-white tracking-tight">프로젝트 정보 작성</h2>
+              </div>
+              <button onclick="closeProjectModal()" class="p-1.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors cursor-pointer">
+                <i data-lucide="x" class="h-4 w-4"></i>
+              </button>
+            </div>
+
+            <!-- Form -->
+            <form id="project-cms-form" onsubmit="submitProjectForm(event)" class="space-y-6 text-neutral-200">
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left panel (Inputs) -->
+                <div class="lg:col-span-2 space-y-5">
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">프로젝트 제목 *</label>
+                    <input type="text" id="f-title" required oninput="handleFormTitleInput(this)" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accent" />
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">웹 주소 슬러그 (Slug) *</label>
+                    <input type="text" id="f-slug" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accent" />
+                  </div>
+                  <div class="grid grid-cols-3 gap-4">
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">클라이언트 명 *</label>
+                      <input type="text" id="f-client" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
+                    </div>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">카테고리 *</label>
+                      <select id="f-cat" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
+                        ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("")}
+                      </select>
+                    </div>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">작업 연도 *</label>
+                      <input type="number" id="f-year" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
+                    </div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">담당 역할 / 작업 범위</label>
+                    <input type="text" id="f-role" placeholder="예: Art Direction" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">상세 프로젝트 설명</label>
+                    <textarea id="f-desc" rows="6" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
+                  </div>
+                </div>
+
+                <!-- Right panel (Switches, Uploads) -->
+                <div class="space-y-6">
+                  <div class="bg-neutral-950 p-4 border border-neutral-850 rounded-xl space-y-3">
+                    <h3 class="text-xs font-bold text-white tracking-wide border-b border-neutral-800 pb-2">노출 옵션</h3>
+                    <div class="flex items-center justify-between text-xs text-neutral-400">
+                      <span>공개 여부</span>
+                      <input type="checkbox" id="f-published" class="w-4 h-4 rounded text-accent bg-neutral-900 border-neutral-800 focus:ring-accent" />
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-neutral-400">
+                      <span>대표 지정</span>
+                      <input type="checkbox" id="f-featured" class="w-4 h-4 rounded text-accent bg-neutral-900 border-neutral-800 focus:ring-accent" />
+                    </div>
+                    <div class="space-y-1 pt-1">
+                      <label class="text-[9px] font-bold text-neutral-400 uppercase">정렬 순서</label>
+                      <input type="number" id="f-order" value="0" class="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1 text-xs text-white" />
+                    </div>
+                  </div>
+
+                  <!-- Thumbnail Image -->
+                  <div class="bg-neutral-950 p-4 border border-neutral-850 rounded-xl space-y-3">
+                    <h3 class="text-xs font-bold text-white tracking-wide border-b border-neutral-800 pb-2">대표 썸네일 *</h3>
+                    <div id="thumb-preview-box" class="relative aspect-[4/3] bg-neutral-900 border border-neutral-800 rounded overflow-hidden hidden">
+                      <img id="f-thumb-preview" src="" alt="" class="w-full h-full object-cover" />
+                      <button type="button" onclick="clearThumbPreview()" class="absolute top-2 right-2 p-1 bg-black/75 rounded-full text-white hover:bg-red-600 transition-colors"><i data-lucide="x" class="h-3 w-3"></i></button>
+                    </div>
+                    <div class="space-y-2">
+                      <div class="relative border border-dashed border-neutral-800 rounded p-4 text-center hover:bg-neutral-900/50 cursor-pointer">
+                        <input type="file" accept="image/*" onchange="handleModalMediaUpload(this, 'thumb')" class="absolute inset-0 opacity-0 cursor-pointer" />
+                        <span class="text-[9px] text-neutral-400 font-bold">썸네일 파일 업로드</span>
+                      </div>
+                      <div class="space-y-1">
+                        <span class="text-[8px] text-neutral-500 block">또는 외부 이미지 URL 입력</span>
+                        <input type="text" id="f-thumb-url" placeholder="https://..." onchange="applyCustomThumbUrl(this.value)" class="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1.5 text-[9px] text-white" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- YouTube URL -->
+                  <div class="bg-neutral-950 p-4 border border-neutral-850 rounded-xl space-y-2">
+                    <h3 class="text-xs font-bold text-white tracking-wide border-b border-neutral-800 pb-2">동영상 URL</h3>
+                    <input type="text" id="f-video" placeholder="https://www.youtube.com/watch?v=..." class="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1.5 text-[10px] text-white focus:outline-none" />
+                  </div>
+
+                  <!-- Gallery Media -->
+                  <div class="bg-neutral-950 p-4 border border-neutral-850 rounded-xl space-y-3">
+                    <h3 class="text-xs font-bold text-white tracking-wide border-b border-neutral-800 pb-2">갤러리 리스트</h3>
+                    <div id="modal-gallery-preview" class="grid grid-cols-4 gap-1.5"></div>
+                    <div class="space-y-2 pt-1">
+                      <div class="relative border border-dashed border-neutral-800 rounded p-2 text-center hover:bg-neutral-900/50 cursor-pointer">
+                        <input type="file" multiple accept="image/*" onchange="handleModalMediaUpload(this, 'gallery')" class="absolute inset-0 opacity-0 cursor-pointer" />
+                        <span class="text-[8px] text-neutral-400 font-bold">갤러리 파일 업로드</span>
+                      </div>
+                      <div class="space-y-1">
+                        <span class="text-[8px] text-neutral-500 block">또는 외부 이미지 URL 추가</span>
+                        <div class="flex gap-1">
+                          <input type="text" id="f-gallery-custom-input" placeholder="https://..." class="flex-1 bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1 text-[9px] text-white" />
+                          <button type="button" onclick="addCustomGalleryUrl()" class="bg-neutral-800 hover:bg-neutral-700 px-2 text-[8px] rounded text-white">추가</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Modal Footer -->
+              <div class="border-t border-neutral-800 pt-4 flex justify-end gap-3">
+                <button type="button" onclick="closeProjectModal()" class="px-5 py-2.5 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-xs font-bold text-white transition-colors cursor-pointer">취소</button>
+                <button type="submit" class="px-6 py-2.5 bg-accent hover:bg-accent-hover rounded-lg text-xs font-bold text-white transition-transform cursor-pointer">저장하기</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle actions in list
+    window.toggleProjPublished = function(id, current) {
+      const proj = db.getProjectById(id);
+      if (proj) {
+        proj.is_published = !current;
+        db.saveProject(proj);
+        renderAdminProjectsView();
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+    };
+
+    window.toggleProjFeatured = function(id, current) {
+      const proj = db.getProjectById(id);
+      if (proj) {
+        proj.is_featured = !current;
+        db.saveProject(proj);
+        renderAdminProjectsView();
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+    };
+
+    window.softDeleteProj = function(id) {
+      if (confirm("이 프로젝트를 비공개 처리(Soft Delete)하시겠습니까?")) {
+        db.deleteProject(id);
+        renderAdminProjectsView();
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+    };
+
+    window.hardDeleteProj = function(id) {
+      if (confirm("이 프로젝트를 영구 삭제하시겠습니까? 이 작업은 복구되지 않습니다.")) {
+        db.hardDeleteProject(id);
+        renderAdminProjectsView();
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+    };
+
+    // Modal Control Logic
+    let currentGalleryUrls = [];
+    window.openProjectModal = function(id) {
+      currentEditProjectId = id;
+      const modal = document.getElementById("project-form-modal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      
+      const form = document.getElementById("project-cms-form");
+      form.reset();
+
+      if (id) {
+        // Edit mode
+        document.getElementById("modal-title").innerText = "프로젝트 수정";
+        const proj = db.getProjectById(id);
+        if (proj) {
+          document.getElementById("f-title").value = proj.title;
+          document.getElementById("f-slug").value = proj.slug;
+          document.getElementById("f-client").value = proj.client_name;
+          document.getElementById("f-cat").value = proj.category_id;
+          document.getElementById("f-year").value = proj.year;
+          document.getElementById("f-role").value = proj.role || "";
+          document.getElementById("f-desc").value = proj.description || "";
+          
+          document.getElementById("f-published").checked = proj.is_published;
+          document.getElementById("f-featured").checked = proj.is_featured;
+          document.getElementById("f-order").value = proj.sort_order;
+          document.getElementById("f-video").value = proj.video_url || "";
+
+          // Thumbnail preview
+          if (proj.thumbnail_url) {
+            document.getElementById("f-thumb-preview").src = proj.thumbnail_url;
+            document.getElementById("thumb-preview-box").classList.remove("hidden");
+            document.getElementById("f-thumb-url").value = proj.thumbnail_url;
+          } else {
+            document.getElementById("thumb-preview-box").classList.add("hidden");
+          }
+
+          // Gallery list
+          currentGalleryUrls = [...proj.media_urls];
+          renderModalGalleryList();
+        }
+      } else {
+        // Create mode
+        document.getElementById("modal-title").innerText = "신규 프로젝트 등록";
+        document.getElementById("f-published").checked = true;
+        document.getElementById("f-featured").checked = false;
+        document.getElementById("f-order").value = "0";
+        document.getElementById("thumb-preview-box").classList.add("hidden");
+        currentGalleryUrls = [];
+        renderModalGalleryList();
+      }
+
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.closeProjectModal = function() {
+      const modal = document.getElementById("project-form-modal");
+      modal.classList.remove("flex");
+      modal.classList.add("hidden");
+    };
+
+    // Auto slug creation
+    window.handleFormTitleInput = function(elem) {
+      if (!currentEditProjectId) {
+        const slugInput = document.getElementById("f-slug");
+        slugInput.value = elem.value
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9가-힣\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+      }
+    };
+
+    // Thumbnail controller inside modal
+    window.applyCustomThumbUrl = function(val) {
+      if (val.trim()) {
+        document.getElementById("f-thumb-preview").src = val.trim();
+        document.getElementById("thumb-preview-box").classList.remove("hidden");
+      }
+    };
+
+    window.clearThumbPreview = function() {
+      document.getElementById("f-thumb-preview").src = "";
+      document.getElementById("thumb-preview-box").classList.add("hidden");
+      document.getElementById("f-thumb-url").value = "";
+    };
+
+    // Custom image uploads conversion to base64
+    window.handleModalMediaUpload = function(input, type) {
+      const files = input.files;
+      if (!files || files.length === 0) return;
+
+      const readAndUpload = (file) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      };
+
+      if (type === "thumb") {
+        readAndUpload(files[0]).then(base64 => {
+          document.getElementById("f-thumb-preview").src = base64;
+          document.getElementById("thumb-preview-box").classList.remove("hidden");
+          document.getElementById("f-thumb-url").value = base64;
+        });
+      } else {
+        const promises = Array.from(files).map(file => readAndUpload(file));
+        Promise.all(promises).then(urls => {
+          currentGalleryUrls = [...currentGalleryUrls, ...urls];
+          renderModalGalleryList();
+        });
+      }
+    };
+
+    window.addCustomGalleryUrl = function() {
+      const input = document.getElementById("f-gallery-custom-input");
+      if (input.value.trim()) {
+        currentGalleryUrls.push(input.value.trim());
+        renderModalGalleryList();
+        input.value = "";
+      }
+    };
+
+    window.removeModalGalleryItem = function(index) {
+      currentGalleryUrls = currentGalleryUrls.filter((_, i) => i !== index);
+      renderModalGalleryList();
+    };
+
+    function renderModalGalleryList() {
+      const box = document.getElementById("modal-gallery-preview");
+      box.innerHTML = currentGalleryUrls.map((url, i) => `
+        <div class="relative aspect-square border border-neutral-800 bg-neutral-950 rounded overflow-hidden">
+          <img src="${url}" class="w-full h-full object-cover" />
+          <button type="button" onclick="removeModalGalleryItem(${i})" class="absolute top-0.5 right-0.5 p-0.5 bg-black/85 rounded-full text-white hover:bg-red-600 transition-colors"><i data-lucide="x" class="h-2 w-2"></i></button>
+        </div>
+      `).join("");
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    }
+
+    // Submit project form
+    window.submitProjectForm = function(e) {
+      e.preventDefault();
+      
+      const payload = {
+        title: document.getElementById("f-title").value,
+        slug: document.getElementById("f-slug").value,
+        client_name: document.getElementById("f-client").value,
+        category_id: document.getElementById("f-cat").value,
+        year: Number(document.getElementById("f-year").value),
+        role: document.getElementById("f-role").value,
+        description: document.getElementById("f-desc").value,
+        is_published: document.getElementById("f-published").checked,
+        is_featured: document.getElementById("f-featured").checked,
+        sort_order: Number(document.getElementById("f-order").value),
+        video_url: document.getElementById("f-video").value,
+        thumbnail_url: document.getElementById("f-thumb-url").value,
+        media_urls: currentGalleryUrls
+      };
+
+      if (currentEditProjectId) {
+        payload.id = currentEditProjectId;
+      }
+
+      db.saveProject(payload);
+      closeProjectModal();
+      renderAdminProjectsView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    // Admin Categories View
+    let currentEditingCategoryId = null;
+    function renderAdminCategoriesView() {
+      const container = document.getElementById("admin-view-content");
+      const list = db.getCategories();
+
+      container.innerHTML = `
+        <div class="space-y-8 animate-fade-in">
+          <!-- Header -->
+          <div class="border-b border-neutral-800 pb-6">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">CMS TAXONOMY</span>
+            <h1 class="text-2xl font-black text-white tracking-tight">카테고리 관리</h1>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Panel: Categories List (Col: 7) -->
+            <div class="lg:col-span-7 bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-xl">
+              <div class="p-5 bg-neutral-950 border-b border-neutral-800">
+                <h2 class="text-xs font-bold text-white tracking-wide uppercase">카테고리 아카이브</h2>
+              </div>
+              <div class="divide-y divide-neutral-800/80">
+                ${list.length > 0 ? list.map(cat => {
+                  const isEditing = currentEditingCategoryId === cat.id;
+                  return `
+                    <div class="p-4 flex items-center justify-between gap-4 hover:bg-neutral-950/20 transition-colors">
+                      ${isEditing ? `
+                        <div class="flex-1 grid grid-cols-3 gap-2">
+                          <input type="text" id="ec-name-${cat.id}" value="${cat.name}" class="bg-neutral-950 border border-neutral-800 rounded px-2.5 py-1 text-xs text-white" />
+                          <input type="text" id="ec-slug-${cat.id}" value="${cat.slug}" class="bg-neutral-950 border border-neutral-800 rounded px-2.5 py-1 text-xs text-white" />
+                          <input type="number" id="ec-order-${cat.id}" value="${cat.sort_order}" class="bg-neutral-950 border border-neutral-800 rounded px-2.5 py-1 text-xs text-white" />
+                        </div>
+                      ` : `
+                        <div class="flex items-center gap-4">
+                          <div class="h-8 w-8 bg-neutral-950 border border-neutral-800 flex items-center justify-center rounded text-xs font-bold font-mono text-accent">
+                            ${cat.sort_order}
+                          </div>
+                          <div>
+                            <p class="font-extrabold text-neutral-200 text-sm leading-tight">${cat.name}</p>
+                            <span class="text-[10px] text-neutral-500 font-mono tracking-wider">slug: ${cat.slug}</span>
+                          </div>
+                        </div>
+                      `}
+                      <div class="flex items-center gap-1.5">
+                        ${isEditing ? `
+                          <button onclick="saveInlineCategory('${cat.id}')" class="p-1.5 bg-emerald-950/20 border border-emerald-900 text-emerald-400 hover:bg-emerald-900 hover:text-white rounded cursor-pointer"><i data-lucide="check" class="h-3.5 w-3.5"></i></button>
+                          <button onclick="cancelInlineEditCategory()" class="p-1.5 bg-neutral-850 hover:bg-neutral-800 text-neutral-400 rounded border border-neutral-850 cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button>
+                        ` : `
+                          <button onclick="editInlineCategory('${cat.id}')" class="p-1.5 bg-neutral-850 hover:bg-neutral-800 text-neutral-400 hover:text-white rounded border border-neutral-850 cursor-pointer"><i data-lucide="edit-2" class="h-3.5 w-3.5"></i></button>
+                          <button onclick="deleteCmsCategory('${cat.id}')" class="p-1.5 bg-neutral-850 hover:bg-red-950/30 text-neutral-400 hover:text-red-400 rounded border border-neutral-850 hover:border-red-900 transition-colors cursor-pointer"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
+                        `}
+                      </div>
+                    </div>
+                  `;
+                }).join("") : `<div class="py-16 text-center text-xs text-neutral-500">등록된 카테고리가 없습니다.</div>`}
+              </div>
+            </div>
+
+            <!-- Right Panel: Creation Form (Col: 5) -->
+            <div class="lg:col-span-5 bg-neutral-900 border border-neutral-800 p-6 rounded-xl shadow-xl h-fit space-y-6">
+              <div>
+                <h2 class="text-sm font-bold text-white tracking-wide">신규 카테고리 등록</h2>
+                <p class="text-[10px] text-neutral-400 font-light mt-1">포트폴리오 필터 탭에 즉시 연동됩니다.</p>
+              </div>
+              <form onsubmit="createNewCmsCategory(event)" class="space-y-4">
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">카테고리명 *</label>
+                  <input type="text" id="nc-name" required oninput="handleCategoryNameInput(this)" placeholder="예: 영상 편집" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-accent" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">영어 주소 슬러그 (Slug) *</label>
+                  <input type="text" id="nc-slug" required placeholder="editing" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-accent" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">노출 정렬 순서</label>
+                  <input type="number" id="nc-order" value="${list.length + 1}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
+                </div>
+                <button type="submit" class="w-full bg-accent hover:bg-accent-hover text-white font-bold text-xs tracking-widest py-3 rounded-lg flex items-center justify-center gap-1 transition-colors cursor-pointer">
+                  <i data-lucide="plus" class="h-4 w-4"></i> 카테고리 추가
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    window.handleCategoryNameInput = function(elem) {
+      const slugInput = document.getElementById("nc-slug");
+      slugInput.value = elem.value
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9가-힣\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+    };
+
+    window.createNewCmsCategory = function(e) {
+      e.preventDefault();
+      const name = document.getElementById("nc-name").value;
+      const slug = document.getElementById("nc-slug").value;
+      const order = Number(document.getElementById("nc-order").value);
+
+      db.saveCategory({ name, slug, sort_order: order });
+      renderAdminCategoriesView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.editInlineCategory = function(id) {
+      currentEditingCategoryId = id;
+      renderAdminCategoriesView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.cancelInlineEditCategory = function() {
+      currentEditingCategoryId = null;
+      renderAdminCategoriesView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.saveInlineCategory = function(id) {
+      const name = document.getElementById(`ec-name-${id}`).value;
+      const slug = document.getElementById(`ec-slug-${id}`).value;
+      const order = Number(document.getElementById(`ec-order-${id}`).value);
+
+      db.saveCategory({ id, name, slug, sort_order: order });
+      currentEditingCategoryId = null;
+      renderAdminCategoriesView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.deleteCmsCategory = function(id) {
+      if (confirm("이 카테고리를 정말 삭제하시겠습니까?")) {
+        db.deleteCategory(id);
+        renderAdminCategoriesView();
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      }
+    };
+
+    // Admin Settings View
+    function renderAdminSettingsView() {
+      const container = document.getElementById("admin-view-content");
+      const settings = db.getSettings();
+
+      container.innerHTML = `
+        <div class="space-y-8 animate-fade-in">
+          <!-- Header -->
+          <div class="border-b border-neutral-800 pb-6">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">CMS PREFERENCES</span>
+            <h1 class="text-2xl font-black text-white tracking-tight">전역 사이트 설정</h1>
+          </div>
+
+          <div id="settings-success-alert" class="p-4 bg-emerald-950/20 border border-emerald-800 rounded-xl text-xs text-emerald-400 font-bold flex items-center gap-2 hidden">
+            <i data-lucide="check-circle" class="h-4 w-4"></i> 사이트 설정 정보가 성공적으로 반영되었습니다.
+          </div>
+
+          <form onsubmit="submitAdminSettingsForm(event)" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left panel (Site Info) -->
+            <div class="lg:col-span-8 bg-neutral-900 border border-neutral-800 p-6 sm:p-8 rounded-xl shadow-xl space-y-6">
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">사이트 타이틀</label>
+                <input type="text" id="s-title" value="${settings.site_title}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent" />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">사이트 설명</label>
+                <textarea id="s-desc" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent resize-none leading-relaxed">${settings.site_description}</textarea>
+              </div>
+
+              <!-- Hero banner settings -->
+              <div class="border-t border-neutral-800 pt-6 space-y-6">
+                <h3 class="text-xs font-bold text-white tracking-wide uppercase flex items-center gap-1.5">
+                  <i data-lucide="globe" class="h-4 w-4 text-neutral-500"></i> 메인 홈 히어로 텍스트 편집
+                </h3>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">히어로 대형 타이틀</label>
+                  <input type="text" id="s-hero-title" value="${settings.hero_title}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">히어로 서브 설명문구</label>
+                  <textarea id="s-hero-sub" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none resize-none leading-relaxed">${settings.hero_subtitle}</textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right panel (Metadata & Actions) -->
+            <div class="lg:col-span-4 space-y-6">
+              <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl shadow-xl space-y-5">
+                <h3 class="text-xs font-bold text-white tracking-wide uppercase border-b border-neutral-800 pb-3 flex items-center gap-1.5">
+                  <i data-lucide="mail" class="h-4 w-4 text-neutral-500"></i> 문의처 & SNS 관리
+                </h3>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">대표 문의 이메일</label>
+                  <input type="email" id="s-email" value="${settings.contact_email}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">인스타그램 주소</label>
+                  <input type="text" id="s-insta" value="${settings.instagram_url}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">비핸스 주소</label>
+                  <input type="text" id="s-behance" value="${settings.behance_url}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
+                </div>
+              </div>
+
+              <!-- Button -->
+              <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl shadow-xl space-y-4">
+                <button type="submit" id="settings-save-btn" class="w-full bg-accent hover:bg-accent-hover text-white font-bold text-xs tracking-widest py-3.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                  <i data-lucide="save" class="h-4 w-4"></i> 설정 저장하기
+                </button>
+                <p class="text-[8px] text-neutral-500 leading-normal text-center">
+                  저장을 완료하면 푸터 및 방문자용 정보가 즉시 동기화됩니다.
+                </p>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      `;
+    }
+
+    window.submitAdminSettingsForm = function(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById("settings-save-btn");
+      saveBtn.disabled = true;
+      saveBtn.innerText = "저장 중...";
+
+      const payload = {
+        site_title: document.getElementById("s-title").value,
+        site_description: document.getElementById("s-desc").value,
+        hero_title: document.getElementById("s-hero-title").value,
+        hero_subtitle: document.getElementById("s-hero-sub").value,
+        contact_email: document.getElementById("s-email").value,
+        instagram_url: document.getElementById("s-insta").value,
+        behance_url: document.getElementById("s-behance").value
+      };
+
+      setTimeout(() => {
+        db.saveSettings(payload);
+        
+        const alert = document.getElementById("settings-success-alert");
+        alert.classList.remove("hidden");
+
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i data-lucide="save" class="h-4 w-4"></i> 설정 저장하기`;
+        
+        if (typeof lucide !== "undefined") lucide.createIcons();
+
+        setTimeout(() => {
+          alert.classList.add("hidden");
+        }, 4000);
+      }, 800);
+    };
+
+    // ==========================================
+    // 7. MAIN INITIALIZATION & LISTENERS
+    // ==========================================
+    function init() {
+      // 1. Local Database seeding
+      initDatabase();
+
+      // 2. Initial hash parsing routing
+      router();
+
+      // 3. Router hook for hash changes
+      window.addEventListener("hashchange", router);
+    }
+
+    // Domloaded boot trigger
+    window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
