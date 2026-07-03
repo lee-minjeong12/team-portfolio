@@ -68,6 +68,24 @@
     .hover-overlay {
       transition: opacity 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
+    
+    /* Modern Form validation feedback with :has() */
+    .space-y-1.5:has(input:placeholder-shown:invalid) label {
+      color: #ef4444; /* red text for blank invalid fields */
+    }
+    .space-y-1.5:has(input:placeholder-shown:invalid) input {
+      border-color: #fca5a5;
+    }
+    
+    /* CSS Container Queries for responsive text scaling inside cards */
+    @container (max-width: 350px) {
+      .hover-overlay h3 {
+        font-size: 0.875rem !important; /* text-sm equivalent */
+      }
+      .hover-overlay p {
+        font-size: 9px !important;
+      }
+    }
   </style>
 </head>
 <body class="min-h-full flex flex-col bg-white text-[#111111] antialiased selection:bg-neutral-200 selection:text-neutral-900">
@@ -453,57 +471,68 @@
       }
 
       // Render Layout Wrapper
-      const isAdmin = route.name.startsWith("admin-");
-      let html = "";
+      const render = () => {
+        const isAdmin = route.name.startsWith("admin-");
+        let html = "";
 
-      if (isAdmin) {
-        // Layout: Admin CMS Layout with Sidebar
-        if (route.name === "admin-login") {
-          html = renderAdminLoginView();
+        if (isAdmin) {
+          // Layout: Admin CMS Layout with Sidebar
+          if (route.name === "admin-login") {
+            html = renderAdminLoginView();
+          } else {
+            html = `
+              <div class="flex min-h-screen bg-neutral-950 text-neutral-100 font-sans">
+                ${renderAdminSidebar()}
+                <main class="flex-grow p-8 sm:p-12 overflow-y-auto max-w-5xl mx-auto w-full">
+                  <div id="admin-view-content"></div>
+                </main>
+              </div>
+            `;
+          }
+          appDiv.innerHTML = html;
+          
+          // Render Sub-Views
+          if (route.name === "admin-dashboard") renderAdminDashboardView();
+          if (route.name === "admin-projects") renderAdminProjectsView();
+          if (route.name === "admin-categories") renderAdminCategoriesView();
+          if (route.name === "admin-settings") renderAdminSettingsView();
         } else {
+          // Layout: Main Visitor Layout with Header/Footer
           html = `
-            <div class="flex min-h-screen bg-neutral-950 text-neutral-100 font-sans">
-              ${renderAdminSidebar()}
-              <main class="flex-grow p-8 sm:p-12 overflow-y-auto max-w-5xl mx-auto w-full">
-                <div id="admin-view-content"></div>
-              </main>
-            </div>
+            ${renderHeader()}
+            <main class="flex-grow flex flex-col pt-20">
+              <div id="visitor-view-content"></div>
+            </main>
+            ${renderFooter()}
           `;
+          appDiv.innerHTML = html;
+
+          // Render Sub-Views
+          if (route.name === "home") renderHomeView();
+          if (route.name === "works") renderWorksView();
+          if (route.name === "project-detail") renderProjectDetailView(route.params.slug);
+          if (route.name === "about") renderAboutView();
+          if (route.name === "contact") renderContactView();
+          if (route.name === "not-found") renderNotFoundView();
         }
-        appDiv.innerHTML = html;
-        
-        // Render Sub-Views
-        if (route.name === "admin-dashboard") renderAdminDashboardView();
-        if (route.name === "admin-projects") renderAdminProjectsView();
-        if (route.name === "admin-categories") renderAdminCategoriesView();
-        if (route.name === "admin-settings") renderAdminSettingsView();
+      };
+
+      // Wrap rendering in View Transitions API if supported
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          render();
+          if (typeof lucide !== "undefined") {
+            lucide.createIcons();
+          }
+          window.scrollTo(0, 0);
+        });
       } else {
-        // Layout: Main Visitor Layout with Header/Footer
-        html = `
-          ${renderHeader()}
-          <main class="flex-grow flex flex-col pt-20">
-            <div id="visitor-view-content"></div>
-          </main>
-          ${renderFooter()}
-        `;
-        appDiv.innerHTML = html;
-
-        // Render Sub-Views
-        if (route.name === "home") renderHomeView();
-        if (route.name === "works") renderWorksView();
-        if (route.name === "project-detail") renderProjectDetailView(route.params.slug);
-        if (route.name === "about") renderAboutView();
-        if (route.name === "contact") renderContactView();
-        if (route.name === "not-found") renderNotFoundView();
+        render();
+        if (typeof lucide !== "undefined") {
+          lucide.createIcons();
+        }
+        window.scrollTo(0, 0);
       }
-
-      // Initialize icons dynamically
-      if (typeof lucide !== "undefined") {
-        lucide.createIcons();
-      }
-      
-      // Scroll to top
-      window.scrollTo(0, 0);
     }
 
     // ==========================================
@@ -597,25 +626,27 @@
       const catName = cat ? cat.name : "PROJECT";
 
       return `
-        <a href="#/works/${p.slug}" class="group relative block w-full aspect-[4/3] overflow-hidden bg-neutral-900">
-          ${p.thumbnail_url ? `
-            <img src="${p.thumbnail_url}" alt="" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
-          ` : `
-            <div class="flex h-full w-full items-center justify-center bg-neutral-800 text-neutral-500">No image</div>
-          `}
-          <!-- Hover Overlay: univ.me inspired -->
-          <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 hover-overlay flex flex-col justify-between p-6 sm:p-8">
-            <div class="flex justify-between items-center transform -translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
-              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">${catName}</span>
-              <span class="text-[10px] font-bold tracking-widest text-neutral-400">${p.year}</span>
+        <div class="w-full" style="container-type: inline-size;">
+          <a href="#/works/${p.slug}" class="group relative block w-full aspect-[4/3] overflow-hidden bg-neutral-900">
+            ${p.thumbnail_url ? `
+              <img src="${p.thumbnail_url}" alt="" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
+            ` : `
+              <div class="flex h-full w-full items-center justify-center bg-neutral-800 text-neutral-500">No image</div>
+            `}
+            <!-- Hover Overlay: univ.me inspired -->
+            <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 hover-overlay flex flex-col justify-between p-6 sm:p-8">
+              <div class="flex justify-between items-center transform -translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">${catName}</span>
+                <span class="text-[10px] font-bold tracking-widest text-neutral-400">${p.year}</span>
+              </div>
+              <div class="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out delay-75">
+                <p class="text-[11px] font-bold tracking-widest text-neutral-400 uppercase mb-1">${p.client_name}</p>
+                <h3 class="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight">${p.title}</h3>
+                ${p.role ? `<p class="text-[10px] font-medium tracking-wide text-neutral-500 mt-2 font-mono">${p.role}</p>` : ''}
+              </div>
             </div>
-            <div class="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out delay-75">
-              <p class="text-[11px] font-bold tracking-widest text-neutral-400 uppercase mb-1">${p.client_name}</p>
-              <h3 class="text-lg sm:text-xl font-extrabold tracking-tight text-white leading-tight">${p.title}</h3>
-              ${p.role ? `<p class="text-[10px] font-medium tracking-wide text-neutral-500 mt-2 font-mono">${p.role}</p>` : ''}
-            </div>
-          </div>
-        </a>
+          </a>
+        </div>
       `;
     }
 
@@ -1515,8 +1546,8 @@
         </div>
 
         <!-- CRUD Dialog Modal -->
-        <div id="project-form-modal" class="fixed inset-0 z-50 items-center justify-center bg-black/80 backdrop-blur-sm p-4 hidden">
-          <div class="bg-neutral-900 border border-neutral-800 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+        <dialog id="project-form-modal" class="backdrop:bg-black/85 backdrop:backdrop-blur-sm bg-neutral-900 border border-neutral-800 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 focus:outline-none">
+          <div>
             
             <!-- Modal Header -->
             <div class="flex justify-between items-start border-b border-neutral-800 pb-4">
@@ -1641,7 +1672,7 @@
               </div>
             </form>
           </div>
-        </div>
+        </dialog>
       `;
     }
 
@@ -1687,8 +1718,7 @@
     window.openProjectModal = function(id) {
       currentEditProjectId = id;
       const modal = document.getElementById("project-form-modal");
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
+      modal.showModal();
       
       const form = document.getElementById("project-cms-form");
       form.reset();
@@ -1740,8 +1770,7 @@
 
     window.closeProjectModal = function() {
       const modal = document.getElementById("project-form-modal");
-      modal.classList.remove("flex");
-      modal.classList.add("hidden");
+      modal.close();
     };
 
     // Auto slug creation
