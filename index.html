@@ -1671,6 +1671,56 @@
                     </div>
                   </div>
 
+                  <!-- Mockup Generator Engine -->
+                  <div class="bg-neutral-950 p-4 border border-neutral-850 rounded-xl space-y-4">
+                    <h3 class="text-xs font-bold text-white tracking-wide border-b border-neutral-800 pb-2 flex items-center gap-1.5">
+                      <i data-lucide="smartphone" class="h-4 w-4 text-accent"></i> 디바이스 목업 생성기
+                    </h3>
+                    
+                    <!-- Screenshot Input -->
+                    <div class="space-y-1.5">
+                      <label class="text-[9px] font-bold text-neutral-400 uppercase">스크린샷 이미지 업로드</label>
+                      <div class="relative border border-dashed border-neutral-800 rounded p-3 text-center hover:bg-neutral-900/50 cursor-pointer">
+                        <input type="file" accept="image/*" id="mock-upload-input" onchange="loadMockupScreenshot(this)" class="absolute inset-0 opacity-0 cursor-pointer" />
+                        <span class="text-[8px] text-neutral-400 font-bold">합성할 이미지 선택</span>
+                      </div>
+                    </div>
+
+                    <!-- Template Select Grid -->
+                    <div class="space-y-1.5">
+                      <label class="text-[9px] font-bold text-neutral-400 uppercase">목업 디바이스 템플릿 선택</label>
+                      <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="selectMockupTemplate('iphone-dark')" id="btn-mock-iphone-dark" class="mock-tmpl-btn p-2 border border-accent rounded bg-neutral-900 text-[8px] font-bold text-white hover:border-accent text-center focus:outline-none">iPhone Dark</button>
+                        <button type="button" onclick="selectMockupTemplate('iphone-light')" id="btn-mock-iphone-light" class="mock-tmpl-btn p-2 border border-neutral-850 rounded bg-neutral-900 text-[8px] font-bold text-neutral-300 hover:border-accent text-center focus:outline-none">iPhone Light</button>
+                        <button type="button" onclick="selectMockupTemplate('iphone-notch')" id="btn-mock-iphone-notch" class="mock-tmpl-btn p-2 border border-neutral-850 rounded bg-neutral-900 text-[8px] font-bold text-neutral-300 hover:border-accent text-center focus:outline-none">iPhone Notch</button>
+                        <button type="button" onclick="selectMockupTemplate('iphone-landscape')" id="btn-mock-iphone-landscape" class="mock-tmpl-btn p-2 border border-neutral-850 rounded bg-neutral-900 text-[8px] font-bold text-neutral-300 hover:border-accent text-center focus:outline-none">Landscape</button>
+                        <button type="button" onclick="selectMockupTemplate('iphone-dual')" id="btn-mock-iphone-dual" class="mock-tmpl-btn p-2 border border-neutral-850 rounded bg-neutral-900 text-[8px] font-bold text-neutral-300 hover:border-accent text-center focus:outline-none">Dual View</button>
+                      </div>
+                    </div>
+
+                    <!-- Y-offset slider for screen positioning -->
+                    <div class="space-y-1.5">
+                      <div class="flex justify-between items-center text-[9px] font-bold text-neutral-400">
+                        <span>화면 수직 위치 조절 (Y-Offset)</span>
+                        <span id="lbl-mock-y-offset">0%</span>
+                      </div>
+                      <input type="range" id="mock-y-offset" min="-100" max="100" value="0" oninput="adjustMockupOffset(this.value)" class="w-full h-1 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-accent" />
+                    </div>
+
+                    <!-- Preview Area -->
+                    <div class="relative w-full aspect-square bg-neutral-900 border border-neutral-800 rounded overflow-hidden flex items-center justify-center p-4">
+                      <div id="mockup-preview-container" class="relative w-full h-full flex items-center justify-center">
+                        <span class="text-[8px] text-neutral-500">이미지를 업로드하면 프리뷰가 생성됩니다.</span>
+                      </div>
+                    </div>
+
+                    <!-- Bake Actions -->
+                    <div class="grid grid-cols-2 gap-2">
+                      <button type="button" onclick="generateAndAddMockup()" class="bg-accent hover:bg-accent-hover text-white font-bold text-[9px] py-2.5 rounded transition-colors text-center cursor-pointer uppercase">갤러리에 추가</button>
+                      <button type="button" onclick="downloadMockup()" class="bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-bold text-[9px] py-2.5 rounded transition-colors text-center cursor-pointer uppercase">다운로드</button>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
@@ -1780,6 +1830,222 @@
     window.closeProjectModal = function() {
       const modal = document.getElementById("project-form-modal");
       modal.close();
+    };
+
+    // ==========================================
+    // MOCKUP GENERATOR LOGIC
+    // ==========================================
+    let currentMockupScreenshot = null;
+    let currentMockupTemplate = "iphone-dark";
+    let currentMockupYOffset = 0; // -100 to 100
+
+    window.loadMockupScreenshot = function(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        currentMockupScreenshot = reader.result;
+        renderMockupPreview();
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.selectMockupTemplate = function(templateId) {
+      currentMockupTemplate = templateId;
+      document.querySelectorAll(".mock-tmpl-btn").forEach(btn => {
+        btn.classList.remove("border-accent", "text-white");
+        btn.classList.add("border-neutral-850", "text-neutral-300");
+      });
+      const activeBtn = document.getElementById("btn-mock-" + templateId);
+      if (activeBtn) {
+        activeBtn.classList.remove("border-neutral-850", "text-neutral-300");
+        activeBtn.classList.add("border-accent", "text-white");
+      }
+      renderMockupPreview();
+    };
+
+    window.adjustMockupOffset = function(val) {
+      currentMockupYOffset = Number(val);
+      document.getElementById("lbl-mock-y-offset").innerText = val + "%";
+      renderMockupPreview();
+    };
+
+    function drawRoundedRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function renderDeviceOnCanvas(ctx, img, template, x, y, w, h, yOffset) {
+      ctx.save();
+      
+      // Draw screen background (black area inside phone)
+      ctx.fillStyle = '#000000';
+      drawRoundedRect(ctx, x + 3, y + 3, w - 6, h - 6, 32);
+      ctx.fill();
+
+      // Screen image clipping mask
+      ctx.save();
+      const margin = 8;
+      ctx.beginPath();
+      drawRoundedRect(ctx, x + margin, y + margin, w - (margin * 2), h - (margin * 2), 28);
+      ctx.clip();
+
+      // Calculate screenshot aspect mapping
+      const screenW = w - (margin * 2);
+      const screenH = h - (margin * 2);
+      const imgRatio = img.width / img.height;
+      const drawW = screenW;
+      const drawH = screenW / imgRatio;
+
+      // Adjust scrolling offset percent (-100 to 100)
+      const maxScrollY = Math.max(0, drawH - screenH);
+      const scrollY = ((yOffset + 100) / 200) * maxScrollY;
+
+      ctx.drawImage(img, x + margin, y + margin - scrollY, drawW, drawH);
+      ctx.restore(); // end screenshot clipping mask
+
+      // Draw Bezel frame overlay
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = template === 'iphone-light' ? '#d4d4d8' : '#1e1e1e';
+      drawRoundedRect(ctx, x + 4, y + 4, w - 8, h - 8, 30);
+      ctx.stroke();
+
+      // Inner highlight line for titanium look
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = template === 'iphone-light' ? '#ffffff' : '#3a3a3c';
+      drawRoundedRect(ctx, x + 7, y + 7, w - 14, h - 14, 27);
+      ctx.stroke();
+
+      // Draw notch / Dynamic Island
+      ctx.fillStyle = '#000000';
+      if (template === 'iphone-dark' || template === 'iphone-light' || template === 'iphone-landscape') {
+        // Dynamic Island
+        if (template === 'iphone-landscape') {
+          // Horizontal Island on left
+          const islandW = 12;
+          const islandH = w * 0.28;
+          drawRoundedRect(ctx, x + 16, y + (h - islandH) / 2, islandW, islandH, 6);
+        } else {
+          // Vertical portrait Island on top
+          const islandW = w * 0.28;
+          const islandH = 14;
+          drawRoundedRect(ctx, x + (w - islandW) / 2, y + 16, islandW, islandH, 7);
+        }
+        ctx.fill();
+      } else if (template === 'iphone-notch') {
+        // Trapezoid notch at the top
+        const notchW = w * 0.45;
+        const notchH = 20;
+        ctx.beginPath();
+        ctx.moveTo(x + (w - notchW) / 2, y + 7);
+        ctx.lineTo(x + (w - notchW) / 2 + 8, y + 7 + notchH);
+        ctx.lineTo(x + (w + notchW) / 2 - 8, y + 7 + notchH);
+        ctx.lineTo(x + (w + notchW) / 2, y + 7);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      ctx.restore();
+    }
+
+    window.renderMockupPreview = function() {
+      const container = document.getElementById("mockup-preview-container");
+      if (!currentMockupScreenshot) {
+        container.innerHTML = `<span class="text-[8px] text-neutral-500 text-center px-4">이미지를 업로드하고 템플릿을 선택하면 프리뷰가 생성됩니다.</span>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="relative w-full h-full flex items-center justify-center">
+          <canvas id="mockup-canvas" class="max-w-full max-h-full object-contain shadow-2xl rounded bg-neutral-950"></canvas>
+        </div>
+      `;
+
+      const canvas = document.getElementById("mockup-canvas");
+      const ctx = canvas.getContext("2d");
+      const img = new Image();
+      img.src = currentMockupScreenshot;
+
+      img.onload = function() {
+        let canvasW = 400;
+        let canvasH = 400;
+        
+        if (currentMockupTemplate === 'iphone-landscape') {
+          canvasW = 560;
+          canvasH = 380;
+        } else if (currentMockupTemplate === 'iphone-dual') {
+          canvasW = 560;
+          canvasH = 460;
+        } else {
+          canvasW = 340;
+          canvasH = 460;
+        }
+
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+
+        // Background color
+        ctx.fillStyle = '#171717';
+        ctx.fillRect(0, 0, canvasW, canvasH);
+
+        if (currentMockupTemplate === 'iphone-dual') {
+          // Render Left back device frame
+          renderDeviceOnCanvas(ctx, img, 'iphone-dark', 60, 60, 200, 360, currentMockupYOffset);
+          
+          // Add drop shadow under front device
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+          ctx.shadowBlur = 30;
+          ctx.shadowOffsetX = -10;
+          ctx.shadowOffsetY = 10;
+          
+          // Render Right front device frame
+          renderDeviceOnCanvas(ctx, img, 'iphone-light', 280, 40, 220, 396, currentMockupYOffset);
+        } else if (currentMockupTemplate === 'iphone-landscape') {
+          renderDeviceOnCanvas(ctx, img, 'iphone-landscape', 50, 50, 460, 280, currentMockupYOffset);
+        } else {
+          // Single portrait layout
+          renderDeviceOnCanvas(ctx, img, currentMockupTemplate, 50, 30, 240, 400, currentMockupYOffset);
+        }
+        
+        // Re-trigger icon creation if dynamic icons are loaded
+        if (typeof lucide !== "undefined") lucide.createIcons();
+      };
+    };
+
+    window.generateAndAddMockup = function() {
+      const canvas = document.getElementById("mockup-canvas");
+      if (!canvas) {
+        alert("먼저 이미지를 업로드해 주세요!");
+        return;
+      }
+      const dataUrl = canvas.toDataURL("image/png");
+      currentGalleryUrls.push(dataUrl);
+      renderModalGalleryList();
+      alert("스마트폰 목업 이미지가 프로젝트 갤러리에 추가되었습니다!");
+    };
+
+    window.downloadMockup = function() {
+      const canvas = document.getElementById("mockup-canvas");
+      if (!canvas) {
+        alert("먼저 이미지를 업로드해 주세요!");
+        return;
+      }
+      const dataUrl = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = "3team-phone-mockup-" + Date.now() + ".png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     };
 
     // Auto slug creation
