@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- White Background -->
+  <rect width="512" height="512" rx="105" fill="#ffffff"/>
+  
+  <!-- Perfectly Centered Flat-Top Bold "3" Vector Path -->
+  <g transform="translate(7.5, -40)">
+    <path fill="#000000" d="M 135 110 L 370 110 L 370 182 L 272 268 C 328 272 375 312 375 375 C 375 442 312 482 240 482 C 168 482 130 435 122 390 L 195 375 C 200 400 215 424 242 424 C 270 424 298 402 298 372 C 298 340 270 322 225 322 L 182 322 L 182 258 L 272 172 L 135 172 Z"/>
+  </g>
+</svg>

@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CONTENTS CREATIVE 3TEAM | Portfolio</title>
   
+  <!-- Favicon & App Icon (White background with centered flat-top bold 3) -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='105' fill='%23ffffff'/><g transform='translate(7.5, -40)'><path fill='%23000000' d='M 135 110 L 370 110 L 370 182 L 272 268 C 328 272 375 312 375 375 C 375 442 312 482 240 482 C 168 482 130 435 122 390 L 195 375 C 200 400 215 424 242 424 C 270 424 298 402 298 372 C 298 340 270 322 225 322 L 182 322 L 182 258 L 272 172 L 135 172 Z'/></g></svg>">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,10 +104,10 @@
     // 1. SEED DATA & LOCALSTORAGE DATABASE
     // ==========================================
     const DEFAULT_CATEGORIES = [
-      { id: "cat-design", name: "디자인", slug: "design", sort_order: 1, created_at: new Date().toISOString() },
-      { id: "cat-editing", name: "영상 편집", slug: "editing", sort_order: 2, created_at: new Date().toISOString() },
-      { id: "cat-sns-content", name: "SNS 콘텐츠", slug: "sns-content", sort_order: 3, created_at: new Date().toISOString() },
-      { id: "cat-branding", name: "브랜딩", slug: "branding", sort_order: 4, created_at: new Date().toISOString() }
+      { id: "cat-sns", name: "SNS", slug: "sns", sort_order: 1, created_at: new Date().toISOString() },
+      { id: "cat-design", name: "DESIGN", slug: "design", sort_order: 2, created_at: new Date().toISOString() },
+      { id: "cat-edit", name: "EDIT", slug: "edit", sort_order: 3, created_at: new Date().toISOString() },
+      { id: "cat-film", name: "FILM", slug: "film", sort_order: 4, created_at: new Date().toISOString() }
     ];
 
     const DEFAULT_SETTINGS = {
@@ -120,7 +125,7 @@
         id: "proj-1",
         title: "현대 모빌리티 브랜드 리브랜딩",
         slug: "hyundai-mobility-rebranding",
-        category_id: "cat-branding",
+        category_id: "cat-design",
         client_name: "Hyundai Mobility",
         year: 2025,
         role: "Brand Identity Design & Guidelines",
@@ -142,7 +147,7 @@
         id: "proj-2",
         title: "글로벌 패션 테크 기업 2026 브랜드 필름",
         slug: "fashion-tech-brand-film-2026",
-        category_id: "cat-editing",
+        category_id: "cat-edit",
         client_name: "AURA Fashion Tech",
         year: 2026,
         role: "Video Editing & Color Grading",
@@ -163,7 +168,7 @@
         id: "proj-3",
         title: "친환경 에코 라이프스타일 패키지 디자인",
         slug: "eco-lifestyle-package-design",
-        category_id: "cat-design",
+        category_id: "cat-film",
         client_name: "Greenery Lab",
         year: 2025,
         role: "Package & Editorial Design",
@@ -184,7 +189,7 @@
         id: "proj-4",
         title: "신선식품 커머스 'FRESCO' 인스타그램 캠페인",
         slug: "fresco-instagram-campaign",
-        category_id: "cat-sns-content",
+        category_id: "cat-sns",
         client_name: "Fresco Corporation",
         year: 2026,
         role: "Art Direction & Social Content Creation",
@@ -231,8 +236,9 @@
         return;
       }
       try {
-        if (!localStorage.getItem("nexus_categories")) {
+        if (!localStorage.getItem("nexus_categories") || localStorage.getItem("nexus_categories").includes("aditing") || localStorage.getItem("nexus_categories").includes("branding")) {
           localStorage.setItem("nexus_categories", JSON.stringify(DEFAULT_CATEGORIES));
+          localStorage.setItem("nexus_projects", JSON.stringify(DEFAULT_PROJECTS));
         }
         if (!localStorage.getItem("nexus_settings")) {
           localStorage.setItem("nexus_settings", JSON.stringify(DEFAULT_SETTINGS));
@@ -253,7 +259,12 @@
       getCategories() {
         if (!useStorage) return memoryDB.categories.sort((a, b) => a.sort_order - b.sort_order);
         try {
-          return JSON.parse(localStorage.getItem("nexus_categories") || "[]").sort((a, b) => a.sort_order - b.sort_order);
+          let list = JSON.parse(localStorage.getItem("nexus_categories") || "[]");
+          if (!list || list.length === 0 || list.some(c => c.slug === "branding" || c.name === "ADITING" || c.slug === "aditing")) {
+            list = [...DEFAULT_CATEGORIES];
+            try { localStorage.setItem("nexus_categories", JSON.stringify(list)); } catch (e) {}
+          }
+          return list.sort((a, b) => a.sort_order - b.sort_order);
         } catch (e) {
           return [...DEFAULT_CATEGORIES];
         }
@@ -780,27 +791,48 @@
     }
 
     // Works View
-    let currentFilterSlug = "all"; // Persistent filter state
+    let currentFilterSlug = "all"; // Persistent category filter
+    let currentSortOrder = "latest"; // "latest" or "oldest"
+    let currentYearFilter = "all"; // "all" or specific year string
+
     function renderWorksView() {
       const categories = db.getCategories();
       const projects = db.getProjects();
       const contentDiv = document.getElementById("visitor-view-content");
 
-      // Filter logic
-      const filtered = currentFilterSlug === "all"
-        ? projects
-        : projects.filter(p => {
-            const cat = categories.find(c => c.slug === currentFilterSlug);
-            return p.category_id === (cat ? cat.id : null);
-          });
+      // Extract unique available years in descending order
+      const availableYears = Array.from(new Set(projects.map(p => String(p.year)).filter(Boolean))).sort((a, b) => b - a);
+
+      // Filter logic (Category & Year)
+      let filtered = projects.filter(p => {
+        const matchesCategory = currentFilterSlug === "all" || (function() {
+          const cat = categories.find(c => c.slug === currentFilterSlug);
+          return p.category_id === (cat ? cat.id : null);
+        })();
+
+        const matchesYear = currentYearFilter === "all" || String(p.year) === String(currentYearFilter);
+
+        return matchesCategory && matchesYear;
+      });
+
+      // Sort logic
+      filtered.sort((a, b) => {
+        const yearA = parseInt(a.year, 10) || 0;
+        const yearB = parseInt(b.year, 10) || 0;
+        if (currentSortOrder === "latest") {
+          return yearB - yearA || (b.sort_order - a.sort_order);
+        } else {
+          return yearA - yearB || (a.sort_order - b.sort_order);
+        }
+      });
 
       let gridHtml = "";
       if (filtered.length > 0) {
         gridHtml = filtered.map(p => renderPortfolioCard(p)).join("");
       } else {
         gridHtml = `
-          <div class="col-span-full py-32 text-center text-sm text-neutral-400 border border-dashed border-neutral-200 bg-neutral-50">
-            선택된 카테고리에 활성화된 프로젝트가 존재하지 않습니다.
+          <div class="col-span-full py-32 text-center text-sm text-neutral-400 border border-dashed border-neutral-200 bg-neutral-50 rounded-xl">
+            선택된 필터 조건에 해당하는 프로젝트가 존재하지 않습니다.
           </div>
         `;
       }
@@ -816,19 +848,41 @@
             </p>
           </div>
 
-          <!-- Category Filters Tab: univ.me inspired -->
-          <div class="border-b border-neutral-200 mb-12 overflow-x-auto scrollbar-none">
-            <div class="flex gap-8 pb-3 min-w-max">
-              <button onclick="setWorksFilter('all')" class="relative pb-3 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === 'all' ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
+          <!-- Category & Filter Bar -->
+          <div class="border-b border-neutral-200 mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3">
+            <!-- Category Tabs -->
+            <div class="flex gap-6 overflow-x-auto scrollbar-none min-w-max pb-1 md:pb-0">
+              <button onclick="setWorksFilter('all')" class="relative pb-2 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === 'all' ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
                 ALL
-                ${currentFilterSlug === 'all' ? '<span class="absolute bottom-[-1px] left-0 h-[2px] w-full bg-black"></span>' : ''}
+                ${currentFilterSlug === 'all' ? '<span class="absolute bottom-[-4px] left-0 h-[2px] w-full bg-black"></span>' : ''}
               </button>
               ${categories.map(cat => `
-                <button onclick="setWorksFilter('${cat.slug}')" class="relative pb-3 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === cat.slug ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
+                <button onclick="setWorksFilter('${cat.slug}')" class="relative pb-2 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === cat.slug ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
                   ${cat.name}
-                  ${currentFilterSlug === cat.slug ? '<span class="absolute bottom-[-1px] left-0 h-[2px] w-full bg-black"></span>' : ''}
+                  ${currentFilterSlug === cat.slug ? '<span class="absolute bottom-[-4px] left-0 h-[2px] w-full bg-black"></span>' : ''}
                 </button>
               `).join("")}
+            </div>
+
+            <!-- Sort & Year Controls -->
+            <div class="flex items-center gap-6 self-end md:self-auto">
+              <!-- Sort Order -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">정렬</span>
+                <select onchange="setWorksSortOrder(this.value)" class="bg-transparent border-b border-neutral-900 rounded-none px-1 py-0.5 text-xs font-bold text-neutral-900 cursor-pointer focus:outline-none hover:border-accent transition-colors">
+                  <option value="latest" ${currentSortOrder === 'latest' ? 'selected' : ''}>최신순</option>
+                  <option value="oldest" ${currentSortOrder === 'oldest' ? 'selected' : ''}>오래된순</option>
+                </select>
+              </div>
+
+              <!-- Year Filter -->
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">연도</span>
+                <select onchange="setWorksYearFilter(this.value)" class="bg-transparent border-b border-neutral-900 rounded-none px-1 py-0.5 text-xs font-bold text-neutral-900 cursor-pointer focus:outline-none hover:border-accent transition-colors">
+                  <option value="all" ${currentYearFilter === 'all' ? 'selected' : ''}>전체 연도</option>
+                  ${availableYears.map(y => `<option value="${y}" ${String(currentYearFilter) === String(y) ? 'selected' : ''}>${y}년</option>`).join("")}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -840,9 +894,21 @@
       `;
     }
 
-    // Triggered when categories filter tabs are clicked
+    // Filter Trigger Handlers
     window.setWorksFilter = function(slug) {
       currentFilterSlug = slug;
+      renderWorksView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.setWorksSortOrder = function(order) {
+      currentSortOrder = order;
+      renderWorksView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    window.setWorksYearFilter = function(year) {
+      currentYearFilter = year;
       renderWorksView();
       if (typeof lucide !== "undefined") lucide.createIcons();
     };
