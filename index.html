@@ -112,7 +112,6 @@
       hero_subtitle: "콘텐츠 크리에이티브3팀은 경계를 넘나드는 크리에이티브로 브랜드의 핵심 가치를 시각화합니다.",
       contact_email: "contact@contents3team.com",
       instagram_url: "https://instagram.com/contents_creative_3team",
-      behance_url: "https://behance.net/contents_creative_3team",
       updated_at: new Date().toISOString()
     };
 
@@ -538,6 +537,26 @@
     // ==========================================
     // 3. VISITOR LAYOUT PARTS
     // ==========================================
+    let logoClickCount = 0;
+    let logoClickTimer = null;
+
+    window.handleLogoClick = function(e) {
+      logoClickCount++;
+      if (logoClickTimer) clearTimeout(logoClickTimer);
+      
+      if (logoClickCount >= 5) {
+        e.preventDefault();
+        logoClickCount = 0;
+        const targetHash = auth.isAuthenticated() ? "#/admin/projects" : "#/admin/login";
+        window.location.hash = targetHash;
+        return false;
+      }
+      
+      logoClickTimer = setTimeout(() => {
+        logoClickCount = 0;
+      }, 2500);
+    };
+
     function renderHeader() {
       const isLogged = auth.isAuthenticated();
       const pathname = window.location.hash;
@@ -548,7 +567,7 @@
       return `
         <header class="fixed top-0 left-0 z-50 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md">
           <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
-            <a href="#/" class="group flex items-center gap-2">
+            <a href="#/" onclick="handleLogoClick(event)" class="group flex items-center gap-2 select-none cursor-pointer">
               <span class="text-2xl font-black tracking-tighter transition-colors group-hover:text-accent">CONTENTS CREATIVE 3TEAM</span>
               <span class="h-1.5 w-1.5 rounded-full bg-accent transition-transform group-hover:scale-150"></span>
             </a>
@@ -577,9 +596,7 @@
                 <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
                   <i data-lucide="settings" class="h-3 w-3"></i> ADMIN
                 </a>
-              ` : `
-                <a href="#/admin/login" class="text-[10px] font-bold tracking-wider text-neutral-500 hover:text-black">LOGIN</a>
-              `}
+              ` : ''}
             </nav>
           </div>
         </header>
@@ -604,7 +621,6 @@
                 </a>
                 <div class="flex gap-6 mt-4">
                   <a href="${settings.instagram_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-white transition-colors">INSTAGRAM</a>
-                  <a href="${settings.behance_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-white transition-colors">BEHANCE</a>
                 </div>
               </div>
             </div>
@@ -688,8 +704,8 @@
             <div class="inline-flex items-center gap-2 rounded-full border border-neutral-100 bg-neutral-50 px-3 py-1 text-[10px] font-bold tracking-wider text-neutral-500 uppercase">
               Creative Studio
             </div>
-            <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.1]">${settings.hero_title}</h1>
-            <p class="text-base sm:text-lg text-neutral-500 max-w-2xl font-light leading-relaxed">${settings.hero_subtitle}</p>
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight" style="line-height: calc(1em + 25px) !important;">${settings.hero_title}</h1>
+            <p class="text-base sm:text-lg text-neutral-500 max-w-4xl font-light leading-relaxed sm:whitespace-nowrap" style="word-break: keep-all;">${settings.hero_subtitle}</p>
             <div class="pt-4 flex gap-4">
               <a href="#/works" class="group flex items-center gap-2 rounded-full bg-black px-6 py-3.5 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
                 VIEW WORKS <i data-lucide="move-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
@@ -707,7 +723,7 @@
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
               <div class="space-y-3">
                 <span class="text-[10px] font-bold tracking-widest text-accent uppercase">Featured Works</span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">우리의 생각을 증명하는 대표 프로젝트</h2>
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">우리의 생각을 증명하는 대표 프로젝트</h2>
               </div>
               <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent transition-colors">
                 ALL PROJECTS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
@@ -724,7 +740,7 @@
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
             <div class="lg:col-span-4 space-y-3">
               <span class="text-[10px] font-bold tracking-widest text-accent uppercase">ABOUT CONTENTS CREATIVE 3TEAM</span>
-              <h2 class="text-3xl font-extrabold tracking-tight">We make it visual, <br class="hidden lg:block" />We make it real.</h2>
+              <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">We make it visual, <br class="hidden lg:block" />We make it real.</h2>
             </div>
             <div class="lg:col-span-8 space-y-6 text-base sm:text-lg text-neutral-600 leading-relaxed font-light">
               <p>
@@ -747,7 +763,7 @@
         <section class="bg-black text-white py-24 sm:py-32 text-center">
           <div class="max-w-7xl mx-auto px-6 sm:px-8 space-y-6 sm:space-y-8">
             <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">WORK WITH US</span>
-            <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto leading-tight">
+            <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto" style="line-height: calc(1em + 25px) !important;">
               새로운 비주얼 스토리를 <br />함께 시작할 준비가 되셨나요?
             </h2>
             <p class="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto font-light leading-relaxed">
@@ -792,10 +808,10 @@
       contentDiv.innerHTML = `
         <div class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
           <!-- Page Title -->
-          <div class="space-y-4 mb-16 max-w-2xl">
+          <div class="space-y-4 mb-16 max-w-4xl">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR ARCHIVE</span>
-            <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">생각을 시각화한 프로젝트 목록</h1>
-            <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed">
+            <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl" style="line-height: calc(1em + 25px) !important;">생각을 시각화한 프로젝트 목록</h1>
+            <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed" style="word-break: keep-all;">
               브랜딩부터 영상 편집, 디지털 콘텐츠 디자인까지 콘텐츠 크리에이티브3팀이 수행한 다양한 필드의 작업물들을 탐색할 수 있습니다.
             </p>
           </div>
@@ -904,7 +920,7 @@
                 <i data-lucide="arrow-left" class="h-3 w-3"></i> BACK TO ARCHIVE
               </a>
               <div><span class="inline-block text-[10px] font-bold tracking-widest text-accent uppercase">${catName}</span></div>
-              <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">${project.title}</h1>
+              <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white" style="line-height: calc(1em + 25px) !important;">${project.title}</h1>
             </div>
           </div>
         </section>
@@ -989,7 +1005,7 @@
         <section class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
           <div class="max-w-3xl space-y-6">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WHO WE ARE</span>
-            <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-[1.1]">우리는 브랜드의 감각을 깨우는 크리에이터 팀입니다.</h1>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight" style="line-height: calc(1em + 25px) !important;">우리는 브랜드의 감각을 깨우는 크리에이터 팀입니다.</h1>
             <p class="text-base sm:text-lg text-neutral-500 font-light leading-relaxed">
               콘텐츠 크리에이티브3팀은 차가운 텍스트 속 브랜드 가치를 가장 뜨겁고 트렌디한 시각 언어로 통역합니다.
               기획에서 제작, 숏폼 모션 그래픽, SNS 브랜딩 가이드라인까지 올인원 디자인 제작 시스템을 제공합니다.
@@ -1002,7 +1018,7 @@
           <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="max-w-2xl space-y-3 mb-16">
               <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR STRENGTHS</span>
-              <h2 class="text-3xl font-extrabold tracking-tight">콘텐츠 크리에이티브3팀이 일하는 방식과 경쟁력</h2>
+              <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">콘텐츠 크리에이티브3팀이 일하는 방식과 경쟁력</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
@@ -1040,7 +1056,7 @@
         <section class="py-24 sm:py-32 max-w-7xl mx-auto px-6 sm:px-8">
           <div class="max-w-2xl space-y-3 mb-16">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK PROCESS</span>
-            <h2 class="text-3xl font-extrabold tracking-tight">협업 프로세스</h2>
+            <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">협업 프로세스</h2>
             <p class="text-sm text-neutral-400 font-light">콘텐츠 크리에이티브3팀은 투명하고 효율적인 4단계 시스템을 준수합니다.</p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -1082,7 +1098,7 @@
             <div class="lg:col-span-5 space-y-12">
               <div class="space-y-4">
                 <span class="text-[10px] font-bold tracking-widest text-accent uppercase">TALK TO US</span>
-                <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl">브랜드의 새로운 도약을 함께 준비합니다.</h1>
+                <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl" style="line-height: calc(1em + 25px) !important;">브랜드의 새로운 도약을 함께 준비합니다.</h1>
                 <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed">
                   신규 프로젝트 의뢰, 예산별 가견적 분석, 단기 에디팅 아웃소싱 파트너십 제안 등 어떤 문의든 환영합니다.
                 </p>
@@ -1111,19 +1127,7 @@
                     </a>
                   </div>
                 </div>
-                <div class="flex items-start gap-4">
-                  <div class="p-3 bg-[#f9f9f9] rounded-lg text-neutral-600">
-                    <svg class="h-5 w-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z" />
-                    </svg>
-                  </div>
-                  <div class="space-y-1">
-                    <span class="text-[10px] font-bold tracking-widest text-neutral-400 block uppercase">BEHANCE PORTFOLIO</span>
-                    <a href="${settings.behance_url}" target="_blank" class="text-base font-bold hover:text-accent flex items-center gap-1 transition-colors">
-                      Behance Profile <i data-lucide="external-link" class="h-3 w-3"></i>
-                    </a>
-                  </div>
-                </div>
+
               </div>
             </div>
 
@@ -2356,10 +2360,7 @@
                   <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">인스타그램 주소</label>
                   <input type="text" id="s-insta" value="${settings.instagram_url}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
                 </div>
-                <div class="space-y-1.5">
-                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">비핸스 주소</label>
-                  <input type="text" id="s-behance" value="${settings.behance_url}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
-                </div>
+
               </div>
 
               <!-- Button -->
@@ -2390,8 +2391,7 @@
         hero_title: document.getElementById("s-hero-title").value,
         hero_subtitle: document.getElementById("s-hero-sub").value,
         contact_email: document.getElementById("s-email").value,
-        instagram_url: document.getElementById("s-insta").value,
-        behance_url: document.getElementById("s-behance").value
+        instagram_url: document.getElementById("s-insta").value
       };
 
       setTimeout(() => {
