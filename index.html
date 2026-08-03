@@ -27,10 +27,12 @@
       theme: {
         extend: {
           colors: {
-            accent: '#2563eb',
-            'accent-hover': '#1d4ed8',
-            'card-bg': '#f9f9f9',
-            border: '#e5e5e5'
+            accent: '#0fb59e',
+            'accent-hover': '#0a8f7c',
+            'accent2': '#ff7a30',
+            'accent2-hover': '#e8631d',
+            'card-bg': '#ffffff',
+            border: '#111111'
           },
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', '"Noto Sans KR"', 'system-ui', '-apple-system', 'sans-serif'],
@@ -51,11 +53,11 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #cccccc;
+      background: #111111;
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #999999;
+      background: #0fb59e;
     }
     /* Hide scrollbar for category list scrolling on mobile */
     .scrollbar-none::-webkit-scrollbar {
@@ -82,7 +84,31 @@
       border-color: #fca5a5;
     }
     
-    /* CSS Container Queries for responsive text scaling inside cards */
+    /* Outlined display type (line-art style, echoes reference moodboard) */
+    .outline-mint {
+      color: transparent;
+      -webkit-text-stroke: 2px #0fb59e;
+      text-stroke: 2px #0fb59e;
+    }
+    .outline-orange {
+      color: transparent;
+      -webkit-text-stroke: 2px #ff7a30;
+      text-stroke: 2px #ff7a30;
+    }
+    .outline-black {
+      color: transparent;
+      -webkit-text-stroke: 2px #111111;
+      text-stroke: 2px #111111;
+    }
+    .outline-white {
+      color: transparent;
+      -webkit-text-stroke: 2px #ffffff;
+      text-stroke: 2px #ffffff;
+    }
+    .deco-asterisk {
+      font-weight: 900;
+      color: #ff7a30;
+    }
     @container (max-width: 350px) {
       .hover-overlay h3 {
         font-size: 0.875rem !important; /* text-sm equivalent */
@@ -576,35 +602,35 @@
       const contactActive = pathname === "#/contact";
 
       return `
-        <header class="fixed top-0 left-0 z-50 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md">
+        <header class="fixed top-0 left-0 z-50 w-full border-b-2 border-black bg-white/90 backdrop-blur-md">
           <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
             <a href="#/" onclick="handleLogoClick(event)" class="group flex items-center gap-2 select-none cursor-pointer">
               <span class="text-2xl font-black tracking-tighter transition-colors group-hover:text-accent">CONTENTS CREATIVE 3TEAM</span>
-              <span class="h-1.5 w-1.5 rounded-full bg-accent transition-transform group-hover:scale-150"></span>
+              <span class="h-2 w-2 rounded-full bg-accent2 border border-black transition-transform group-hover:scale-150"></span>
             </a>
             <nav class="flex items-center gap-8 sm:gap-12">
               <ul class="flex items-center gap-6 sm:gap-8 text-xs font-bold tracking-widest">
                 <li>
-                  <a href="#/works" class="relative py-2 transition-colors hover:text-black ${worksActive ? 'text-black font-black' : 'text-neutral-500'}">
+                  <a href="#/works" class="relative py-2 transition-colors hover:text-accent ${worksActive ? 'text-black font-black' : 'text-neutral-500'}">
                     WORKS
-                    ${worksActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-black"></span>' : ''}
+                    ${worksActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-accent2"></span>' : ''}
                   </a>
                 </li>
                 <li>
-                  <a href="#/about" class="relative py-2 transition-colors hover:text-black ${aboutActive ? 'text-black font-black' : 'text-neutral-500'}">
+                  <a href="#/about" class="relative py-2 transition-colors hover:text-accent ${aboutActive ? 'text-black font-black' : 'text-neutral-500'}">
                     ABOUT
-                    ${aboutActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-black"></span>' : ''}
+                    ${aboutActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-accent2"></span>' : ''}
                   </a>
                 </li>
                 <li>
-                  <a href="#/contact" class="relative py-2 transition-colors hover:text-black ${contactActive ? 'text-black font-black' : 'text-neutral-500'}">
+                  <a href="#/contact" class="relative py-2 transition-colors hover:text-accent ${contactActive ? 'text-black font-black' : 'text-neutral-500'}">
                     CONTACT
-                    ${contactActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-black"></span>' : ''}
+                    ${contactActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-accent2"></span>' : ''}
                   </a>
                 </li>
               </ul>
               ${isLogged ? `
-                <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
+                <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full border-2 border-black bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
                   <i data-lucide="settings" class="h-3 w-3"></i> ADMIN
                 </a>
               ` : ''}
@@ -617,7 +643,7 @@
     function renderFooter() {
       const settings = db.getSettings();
       return `
-        <footer class="w-full border-t border-neutral-100 bg-[#111111] text-white">
+        <footer class="w-full border-t-2 border-black bg-[#111111] text-white">
           <div class="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-20">
             <div class="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-8">
               <div>
@@ -625,13 +651,13 @@
                 <p class="text-sm text-neutral-400 max-w-md leading-relaxed font-light">${settings.site_description}</p>
               </div>
               <div class="flex flex-col gap-6 md:items-end">
-                <span class="text-xs font-bold tracking-widest text-neutral-400">GET IN TOUCH</span>
-                <a href="mailto:${settings.contact_email}" class="text-lg font-medium text-white hover:text-accent transition-colors flex items-center gap-1 group">
+                <span class="text-xs font-bold tracking-widest text-accent">GET IN TOUCH</span>
+                <a href="mailto:${settings.contact_email}" class="text-lg font-medium text-white hover:text-accent2 transition-colors flex items-center gap-1 group">
                   ${settings.contact_email}
                   <i data-lucide="arrow-up-right" class="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
                 </a>
                 <div class="flex gap-6 mt-4">
-                  <a href="${settings.instagram_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-white transition-colors">INSTAGRAM</a>
+                  <a href="${settings.instagram_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-accent2 transition-colors">INSTAGRAM</a>
                 </div>
               </div>
             </div>
@@ -654,7 +680,7 @@
 
       return `
         <div class="w-full" style="container-type: inline-size;">
-          <a href="#/works/${p.slug}" class="group relative block w-full aspect-[16/9] overflow-hidden bg-neutral-900 rounded-xl shadow-sm">
+          <a href="#/works/${p.slug}" class="group relative block w-full aspect-[16/9] overflow-hidden bg-neutral-900 rounded-xl border-2 border-black shadow-[6px_6px_0px_0px_#111111] transition-shadow duration-300 hover:shadow-[3px_3px_0px_0px_#111111]">
             ${p.thumbnail_url ? `
               <img src="${p.thumbnail_url}" alt="" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
             ` : `
@@ -665,7 +691,7 @@
               
               <!-- Hover slide-in Category & Year -->
               <div class="absolute top-6 left-6 right-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transform -translate-y-3 group-hover:translate-y-0 transition-all duration-500 ease-out">
-                <span class="text-[11px] font-bold tracking-widest text-accent uppercase">${catName}</span>
+                <span class="text-[11px] font-bold tracking-widest text-accent2 uppercase">${catName}</span>
                 <span class="text-[11px] font-bold tracking-widest text-neutral-300">${p.year}</span>
               </div>
               
@@ -710,18 +736,19 @@
 
       contentDiv.innerHTML = `
         <!-- Hero Section -->
-        <section class="relative flex min-h-[70vh] flex-col justify-center px-6 sm:px-8 py-20 max-w-7xl mx-auto w-full">
-          <div class="max-w-4xl space-y-6 sm:space-y-8">
-            <div class="inline-flex items-center gap-2 rounded-full border border-neutral-100 bg-neutral-50 px-3 py-1 text-[10px] font-bold tracking-wider text-neutral-500 uppercase">
-              Creative Studio
+        <section class="relative flex min-h-[70vh] flex-col justify-center px-6 sm:px-8 py-20 max-w-7xl mx-auto w-full overflow-hidden">
+          <span class="outline-mint select-none pointer-events-none absolute -top-10 right-0 sm:right-10 text-[220px] sm:text-[320px] font-black leading-none rotate-12 hidden sm:block">✳</span>
+          <div class="max-w-4xl space-y-6 sm:space-y-8 relative z-10">
+            <div class="inline-flex items-center gap-2 rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-bold tracking-wider text-black uppercase">
+              <span class="deco-asterisk">✳</span> Creative Studio
             </div>
             <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight" style="line-height: calc(1em + 25px) !important;">${settings.hero_title}</h1>
             <p class="text-base sm:text-lg text-neutral-500 max-w-4xl font-light leading-relaxed sm:whitespace-nowrap" style="word-break: keep-all;">${settings.hero_subtitle}</p>
             <div class="pt-4 flex gap-4">
-              <a href="#/works" class="group flex items-center gap-2 rounded-full bg-black px-6 py-3.5 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
+              <a href="#/works" class="group flex items-center gap-2 rounded-full border-2 border-black bg-black px-6 py-3.5 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
                 VIEW WORKS <i data-lucide="move-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
               </a>
-              <a href="#/contact" class="flex items-center gap-2 rounded-full border border-neutral-200 px-6 py-3.5 text-xs font-bold tracking-widest text-black hover:bg-neutral-50 transition-colors">
+              <a href="#/contact" class="flex items-center gap-2 rounded-full border-2 border-black px-6 py-3.5 text-xs font-bold tracking-widest text-black hover:bg-accent2 hover:text-white transition-colors">
                 TALK WITH US
               </a>
             </div>
@@ -729,14 +756,14 @@
         </section>
 
         <!-- Featured Works Grid -->
-        <section class="w-full bg-[#f9f9f9] border-y border-neutral-100 py-24 sm:py-32">
+        <section class="w-full bg-white border-y-2 border-black py-24 sm:py-32">
           <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
               <div class="space-y-3">
-                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">Featured Works</span>
+                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">Featured Works <span class="deco-asterisk">✳</span></span>
                 <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">우리의 생각을 증명하는 대표 프로젝트</h2>
               </div>
-              <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent transition-colors">
+              <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent2 transition-colors">
                 ALL PROJECTS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
               </a>
             </div>
@@ -762,7 +789,7 @@
                 우리는 브랜딩, 디자인 가이드, 소셜 채널 비주얼 어셋, 고화질 숏폼 및 브랜드 필름까지 브랜드와 소비자가 맞닿는 모든 시각적 터치포인트를 설계합니다.
               </p>
               <div class="pt-4">
-                <a href="#/about" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black border-b border-black pb-1 hover:text-accent hover:border-accent transition-colors">
+                <a href="#/about" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black border-b-2 border-black pb-1 hover:text-accent2 hover:border-accent2 transition-colors">
                   LEARN MORE ABOUT US <i data-lucide="arrow-right" class="h-3 w-3 transition-transform group-hover:translate-x-1"></i>
                 </a>
               </div>
@@ -771,9 +798,10 @@
         </section>
 
         <!-- CTA Banner -->
-        <section class="bg-black text-white py-24 sm:py-32 text-center">
-          <div class="max-w-7xl mx-auto px-6 sm:px-8 space-y-6 sm:space-y-8">
-            <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">WORK WITH US</span>
+        <section class="relative overflow-hidden bg-black text-white py-24 sm:py-32 text-center">
+          <span class="outline-white select-none pointer-events-none absolute -bottom-16 -left-10 text-[260px] font-black leading-none -rotate-12 hidden sm:block">✳</span>
+          <div class="max-w-7xl mx-auto px-6 sm:px-8 space-y-6 sm:space-y-8 relative z-10">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK WITH US <span class="deco-asterisk">✳</span></span>
             <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto" style="line-height: calc(1em + 25px) !important;">
               새로운 비주얼 스토리를 <br />함께 시작할 준비가 되셨나요?
             </h2>
@@ -781,7 +809,7 @@
               협업 문의부터 브랜드 분석 제안까지 언제든 열려있습니다. 콘텐츠 크리에이티브3팀과 함께 브랜드 가치를 극대화해보세요.
             </p>
             <div class="pt-4">
-              <a href="#/contact" class="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-xs font-bold tracking-widest text-black transition-transform hover:scale-105">
+              <a href="#/contact" class="group inline-flex items-center gap-2 rounded-full border-2 border-black bg-accent2 px-8 py-4 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
                 START A PROJECT <i data-lucide="move-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
               </a>
             </div>
@@ -838,10 +866,11 @@
       }
 
       contentDiv.innerHTML = `
-        <div class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+        <div class="relative mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24 overflow-hidden">
+          <span class="outline-orange select-none pointer-events-none absolute -top-6 right-0 sm:right-6 text-[160px] font-black leading-none rotate-6 hidden lg:block">✳</span>
           <!-- Page Title -->
-          <div class="space-y-4 mb-16 max-w-4xl">
-            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR ARCHIVE</span>
+          <div class="relative z-10 space-y-4 mb-16 max-w-4xl">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR ARCHIVE <span class="deco-asterisk">✳</span></span>
             <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl" style="line-height: calc(1em + 25px) !important;">생각을 시각화한 프로젝트 목록</h1>
             <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed" style="word-break: keep-all;">
               브랜딩부터 영상 편집, 디지털 콘텐츠 디자인까지 콘텐츠 크리에이티브3팀이 수행한 다양한 필드의 작업물들을 탐색할 수 있습니다.
@@ -849,17 +878,15 @@
           </div>
 
           <!-- Category & Filter Bar -->
-          <div class="border-b border-neutral-200 mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3">
+          <div class="border-b-2 border-black mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
             <!-- Category Tabs -->
-            <div class="flex gap-6 overflow-x-auto scrollbar-none min-w-max pb-1 md:pb-0">
-              <button onclick="setWorksFilter('all')" class="relative pb-2 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === 'all' ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
+            <div class="flex gap-3 overflow-x-auto scrollbar-none min-w-max pb-1 md:pb-0">
+              <button onclick="setWorksFilter('all')" class="rounded-full border-2 border-black px-4 py-1.5 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === 'all' ? 'bg-black text-white' : 'bg-white text-black hover:bg-accent hover:text-white hover:border-accent'}">
                 ALL
-                ${currentFilterSlug === 'all' ? '<span class="absolute bottom-[-4px] left-0 h-[2px] w-full bg-black"></span>' : ''}
               </button>
               ${categories.map(cat => `
-                <button onclick="setWorksFilter('${cat.slug}')" class="relative pb-2 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === cat.slug ? 'text-black font-black' : 'text-neutral-500 hover:text-black'}">
+                <button onclick="setWorksFilter('${cat.slug}')" class="rounded-full border-2 border-black px-4 py-1.5 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === cat.slug ? 'bg-accent2 text-white border-accent2' : 'bg-white text-black hover:bg-accent hover:text-white hover:border-accent'}">
                   ${cat.name}
-                  ${currentFilterSlug === cat.slug ? '<span class="absolute bottom-[-4px] left-0 h-[2px] w-full bg-black"></span>' : ''}
                 </button>
               `).join("")}
             </div>
@@ -1042,7 +1069,7 @@
 
         <!-- Image Gallery Showcase -->
         ${project.media_urls && project.media_urls.length > 0 ? `
-          <section class="w-full border-t border-neutral-100 py-24 bg-[#f9f9f9]">
+          <section class="w-full border-t-2 border-black py-24 bg-white">
             <div class="max-w-7xl mx-auto px-6 sm:px-8">
               <div class="space-y-3 mb-12">
                 <span class="text-[10px] font-bold tracking-widest text-accent uppercase">PROJECT MEDIA</span>
@@ -1068,9 +1095,10 @@
     function renderAboutView() {
       const contentDiv = document.getElementById("visitor-view-content");
       contentDiv.innerHTML = `
-        <section class="mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
-          <div class="max-w-3xl space-y-6">
-            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WHO WE ARE</span>
+        <section class="relative overflow-hidden mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+          <span class="outline-mint select-none pointer-events-none absolute -top-8 right-0 sm:right-10 text-[180px] font-black leading-none -rotate-6 hidden lg:block">✳</span>
+          <div class="relative z-10 max-w-3xl space-y-6">
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WHO WE ARE <span class="deco-asterisk">✳</span></span>
             <h1 class="text-4xl sm:text-6xl font-black tracking-tight" style="line-height: calc(1em + 25px) !important;">우리는 브랜드의 감각을 깨우는 크리에이터 팀입니다.</h1>
             <p class="text-base sm:text-lg text-neutral-500 font-light leading-relaxed">
               콘텐츠 크리에이티브3팀은 차가운 텍스트 속 브랜드 가치를 가장 뜨겁고 트렌디한 시각 언어로 통역합니다.
@@ -1080,15 +1108,15 @@
         </section>
 
         <!-- Core Strengths -->
-        <section class="bg-[#f9f9f9] border-y border-neutral-100 py-24 sm:py-32">
+        <section class="bg-white border-y-2 border-black py-24 sm:py-32">
           <div class="max-w-7xl mx-auto px-6 sm:px-8">
             <div class="max-w-2xl space-y-3 mb-16">
-              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR STRENGTHS</span>
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR STRENGTHS <span class="deco-asterisk">✳</span></span>
               <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">콘텐츠 크리에이티브3팀이 일하는 방식과 경쟁력</h2>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
-                <div class="p-3 bg-[#f9f9f9] inline-block rounded-lg text-accent"><i data-lucide="sparkles" class="h-6 w-6"></i></div>
+              <div class="bg-white border-2 border-black p-8 rounded-lg space-y-6 shadow-[6px_6px_0px_0px_#111111] hover:shadow-[3px_3px_0px_0px_#111111] transition-all duration-300">
+                <div class="p-3 bg-accent/10 inline-block rounded-lg text-accent"><i data-lucide="sparkles" class="h-6 w-6"></i></div>
                 <div class="space-y-3">
                   <h3 class="text-lg font-extrabold tracking-tight">통합적 크리에이티브 시너지</h3>
                   <p class="text-sm text-neutral-500 font-light leading-relaxed">
@@ -1096,8 +1124,8 @@
                   </p>
                 </div>
               </div>
-              <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
-                <div class="p-3 bg-[#f9f9f9] inline-block rounded-lg text-accent"><i data-lucide="zap" class="h-6 w-6"></i></div>
+              <div class="bg-white border-2 border-black p-8 rounded-lg space-y-6 shadow-[6px_6px_0px_0px_#111111] hover:shadow-[3px_3px_0px_0px_#111111] transition-all duration-300">
+                <div class="p-3 bg-accent2/10 inline-block rounded-lg text-accent2"><i data-lucide="zap" class="h-6 w-6"></i></div>
                 <div class="space-y-3">
                   <h3 class="text-lg font-extrabold tracking-tight">트렌디한 비주얼 센스</h3>
                   <p class="text-sm text-neutral-500 font-light leading-relaxed">
@@ -1105,8 +1133,8 @@
                   </p>
                 </div>
               </div>
-              <div class="bg-white border border-neutral-200 p-8 rounded-lg space-y-6 hover:shadow-xl hover:border-neutral-300 transition-all duration-300">
-                <div class="p-3 bg-[#f9f9f9] inline-block rounded-lg text-accent"><i data-lucide="star" class="h-6 w-6"></i></div>
+              <div class="bg-white border-2 border-black p-8 rounded-lg space-y-6 shadow-[6px_6px_0px_0px_#111111] hover:shadow-[3px_3px_0px_0px_#111111] transition-all duration-300">
+                <div class="p-3 bg-accent/10 inline-block rounded-lg text-accent"><i data-lucide="star" class="h-6 w-6"></i></div>
                 <div class="space-y-3">
                   <h3 class="text-lg font-extrabold tracking-tight">철저한 비즈니스 지향성</h3>
                   <p class="text-sm text-neutral-500 font-light leading-relaxed">
@@ -1121,28 +1149,28 @@
         <!-- Processes -->
         <section class="py-24 sm:py-32 max-w-7xl mx-auto px-6 sm:px-8">
           <div class="max-w-2xl space-y-3 mb-16">
-            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK PROCESS</span>
+            <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK PROCESS <span class="deco-asterisk">✳</span></span>
             <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">협업 프로세스</h2>
             <p class="text-sm text-neutral-400 font-light">콘텐츠 크리에이티브3팀은 투명하고 효율적인 4단계 시스템을 준수합니다.</p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="space-y-4 border-t border-neutral-200 pt-6">
-              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">01</span>
+            <div class="space-y-4 border-t-2 border-black pt-6">
+              <span class="text-5xl font-black outline-mint font-mono tracking-tight">01</span>
               <h3 class="text-base font-extrabold tracking-tight">Briefing & Analysis</h3>
               <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">대면 또는 비대면 브리핑을 통해 브랜드의 핵심 고민, 예산, 목표 타겟, 벤치마킹 스타일을 입체적으로 추출합니다.</p>
             </div>
-            <div class="space-y-4 border-t border-neutral-200 pt-6">
-              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">02</span>
+            <div class="space-y-4 border-t-2 border-black pt-6">
+              <span class="text-5xl font-black outline-orange font-mono tracking-tight">02</span>
               <h3 class="text-base font-extrabold tracking-tight">Visual Concepting</h3>
               <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">정의된 무드보드와 컬러 팔레트, 영상 시놉시스를 기획하여 크리에이티브 방향성을 일차적으로 합의합니다.</p>
             </div>
-            <div class="space-y-4 border-t border-neutral-200 pt-6">
-              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">03</span>
+            <div class="space-y-4 border-t-2 border-black pt-6">
+              <span class="text-5xl font-black outline-mint font-mono tracking-tight">03</span>
               <h3 class="text-base font-extrabold tracking-tight">Production & Craft</h3>
               <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">전문 디자이너와 영상 에디터가 본 제작에 착수하며, 최첨단 툴과 정교한 기법으로 디테일을 완성해갑니다.</p>
             </div>
-            <div class="space-y-4 border-t border-neutral-200 pt-6">
-              <span class="text-4xl font-black text-accent/20 font-mono tracking-tight">04</span>
+            <div class="space-y-4 border-t-2 border-black pt-6">
+              <span class="text-5xl font-black outline-orange font-mono tracking-tight">04</span>
               <h3 class="text-base font-extrabold tracking-tight">Refinement & Delivery</h3>
               <p class="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">클라이언트 피드백을 신속하게 통합 수정한 후, 웹 배포 혹은 고화질 미디어 원본 파일 포맷으로 정밀 인도합니다.</p>
             </div>
@@ -1161,23 +1189,23 @@
           <div class="space-y-12">
             
             <div class="space-y-4">
-              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">TALK TO US</span>
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">TALK TO US <span class="deco-asterisk">✳</span></span>
               <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl" style="line-height: calc(1em + 25px) !important;">브랜드의 새로운 도약을 함께 준비합니다.</h1>
               <p class="text-sm sm:text-base text-neutral-500 font-light leading-relaxed">
                 신규 프로젝트 의뢰, 예산별 가견적 분석, 단기 에디팅 아웃소싱 파트너십 제안 등 어떤 문의든 환영합니다.
               </p>
             </div>
 
-            <div class="space-y-8 pt-8 border-t border-neutral-200">
+            <div class="space-y-8 pt-8 border-t-2 border-black">
               <div class="flex items-start gap-4">
-                <div class="p-3.5 bg-[#f9f9f9] rounded-xl text-neutral-600"><i data-lucide="mail" class="h-6 w-6"></i></div>
+                <div class="p-3.5 bg-white border-2 border-black rounded-xl text-accent"><i data-lucide="mail" class="h-6 w-6"></i></div>
                 <div class="space-y-1">
                   <span class="text-[10px] font-bold tracking-widest text-neutral-400 block uppercase">DIRECT EMAIL</span>
-                  <a href="mailto:${settings.contact_email}" class="text-lg font-bold hover:text-accent transition-colors">${settings.contact_email}</a>
+                  <a href="mailto:${settings.contact_email}" class="text-lg font-bold hover:text-accent2 transition-colors">${settings.contact_email}</a>
                 </div>
               </div>
               <div class="flex items-start gap-4">
-                <div class="p-3.5 bg-[#f9f9f9] rounded-xl text-neutral-600">
+                <div class="p-3.5 bg-white border-2 border-black rounded-xl text-accent2">
                   <svg class="h-6 w-6 fill-none stroke-current" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -1186,7 +1214,7 @@
                 </div>
                 <div class="space-y-1">
                   <span class="text-[10px] font-bold tracking-widest text-neutral-400 block uppercase">INSTAGRAM</span>
-                  <a href="${settings.instagram_url}" target="_blank" class="text-lg font-bold hover:text-accent flex items-center gap-1.5 transition-colors">
+                  <a href="${settings.instagram_url}" target="_blank" class="text-lg font-bold hover:text-accent2 flex items-center gap-1.5 transition-colors">
                     Instagram Feed <i data-lucide="external-link" class="h-4 w-4"></i>
                   </a>
                 </div>
