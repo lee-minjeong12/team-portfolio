@@ -488,35 +488,22 @@
     // Auth Helper
     const MOCK_EMAIL = "admin@team.com";
     const MOCK_PASSWORD = "admin1234";
+    // Admin session is intentionally kept in-memory only (not persisted to localStorage),
+    // so leaving the page/site and returning requires logging in again.
+    let inMemoryAdminSession = null;
     const auth = {
       login(email, password) {
         if (email === MOCK_EMAIL && password === MOCK_PASSWORD) {
-          const sessionObj = { email, authenticated: true, timestamp: Date.now() };
-          if (useStorage) {
-            try { localStorage.setItem("nexus_admin_session", JSON.stringify(sessionObj)); } catch (e) {}
-          } else {
-            memoryDB.session = sessionObj;
-          }
+          inMemoryAdminSession = { email, authenticated: true, timestamp: Date.now() };
           return { success: true };
         }
         return { success: false, error: "이메일 또는 비밀번호가 틀립니다. (admin@team.com / admin1234)" };
       },
       logout() {
-        if (useStorage) {
-          try { localStorage.removeItem("nexus_admin_session"); } catch (e) {}
-        } else {
-          memoryDB.session = null;
-        }
+        inMemoryAdminSession = null;
       },
       isAuthenticated() {
-        if (!useStorage) return !!memoryDB.session;
-        try {
-          const session = localStorage.getItem("nexus_admin_session");
-          if (!session) return false;
-          return JSON.parse(session).authenticated === true;
-        } catch (e) {
-          return false;
-        }
+        return !!(inMemoryAdminSession && inMemoryAdminSession.authenticated === true);
       }
     };
 
@@ -607,7 +594,7 @@
           // Layout: Main Visitor Layout with Header/Footer
           html = `
             ${renderHeader()}
-            <main class="flex-grow flex flex-col pt-20">
+            <main class="flex-grow flex flex-col">
               <div id="visitor-view-content"></div>
             </main>
             ${renderFooter()}
@@ -669,17 +656,12 @@
       const isLogged = auth.isAuthenticated();
 
       return `
-        <header class="fixed top-0 left-0 z-50 w-full border-b-2 border-black bg-white/90 backdrop-blur-md">
+        <header class="relative w-full border-b-2 border-black bg-black">
           <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
             <a href="#/" onclick="handleLogoClick(event)" class="group flex items-center gap-2 select-none cursor-pointer">
-              <span class="text-2xl font-black tracking-tighter transition-colors group-hover:text-accent">CONTENTS CREATIVE 3TEAM</span>
-              <span class="h-2 w-2 rounded-full bg-accent2 border border-black transition-transform group-hover:scale-150"></span>
+              <span class="text-lg sm:text-xl font-black tracking-tight text-white transition-colors group-hover:text-accent2">ㅋㅋ3</span>
+              ${isLogged ? '<span class="h-2 w-2 rounded-full bg-accent2 shadow-[0_0_8px_2px_rgba(255,122,48,0.7)]"></span>' : ''}
             </a>
-            ${isLogged ? `
-              <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full border-2 border-black bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
-                <i data-lucide="settings" class="h-3 w-3"></i> ADMIN
-              </a>
-            ` : ''}
           </div>
         </header>
       `;
@@ -773,16 +755,12 @@
       contentDiv.innerHTML = `
         <!-- Hero Section (Motion Reference) -->
         <section id="hero-motion" class="relative w-full bg-black text-white overflow-hidden min-h-[100vh] sm:min-h-[92vh] flex flex-col justify-center px-6 sm:px-10">
-          <div class="absolute top-8 left-6 sm:left-10 z-20">
-            <span class="text-lg sm:text-xl font-black tracking-tight text-white select-none">ㅋㅋ3</span>
-          </div>
-
           <div id="hero-cursor-dot" class="pointer-events-none fixed z-[999] rounded-full bg-accent2 opacity-0" style="width:18px;height:18px; left:0; top:0; transform:translate(-50%,-50%); transition: opacity 200ms ease-out, width 200ms ease-out, height 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out;"></div>
 
           <div class="relative z-10 space-y-1 sm:space-y-2 py-24 select-none">
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0.03" style="transition: transform 300ms ease-out;">CONTENTS</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0.07" style="transition: transform 300ms ease-out; padding-left: 6vw;">CREATIVE</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0.12" style="transition: transform 300ms ease-out; padding-left: 12vw;">3TEAM</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0.25" style="transition: transform 220ms ease-out;">CONTENTS</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0.9" style="transition: transform 220ms ease-out; padding-left: 4vw;">CREATIVE</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="1.9" style="transition: transform 220ms ease-out; padding-left: 8vw;">3TEAM</h1>
           </div>
 
           <div class="relative z-10 pb-16 flex items-center gap-4">
@@ -801,13 +779,13 @@
         </section>
 
         <!-- Brief Studio Intro -->
-        <section class="py-24 sm:py-32 max-w-7xl mx-auto w-full px-6 sm:px-8">
+        <section class="py-24 sm:py-32 max-w-7xl mx-auto w-full px-6 sm:px-8 bg-black">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
             <div class="lg:col-span-4 space-y-3">
-              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">ABOUT CONTENTS CREATIVE 3TEAM</span>
-              <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">We make it visual, <br class="hidden lg:block" />We make it real.</h2>
+              <span class="text-[10px] font-bold tracking-widest text-accent2 uppercase">ABOUT CONTENTS CREATIVE 3TEAM</span>
+              <h2 class="text-3xl font-extrabold tracking-tight text-white" style="line-height: calc(1em + 25px) !important;">We make it visual, <br class="hidden lg:block" />We make it real.</h2>
             </div>
-            <div class="lg:col-span-8 space-y-6 text-base sm:text-lg text-neutral-600 leading-relaxed font-light">
+            <div class="lg:col-span-8 space-y-6 text-base sm:text-lg text-neutral-300 leading-relaxed font-light">
               <p>
                 콘텐츠 크리에이티브3팀은 기획자, 디자이너, 에디터가 한 팀으로 모여 가장 현대적이고 트렌디한 시각 언어로 메시지를 시각화하는 크리에이티브 그룹입니다.
                 단순히 아름다운 결과물에 그치지 않고, 클라이언트가 달성하고자 하는 비즈니스 골과 브랜드 본질을 깊이 관조하여 매력적인 시각 경험으로 풀어냅니다.
@@ -816,7 +794,7 @@
                 우리는 브랜딩, 디자인 가이드, 소셜 채널 비주얼 어셋, 고화질 숏폼 및 브랜드 필름까지 브랜드와 소비자가 맞닿는 모든 시각적 터치포인트를 설계합니다.
               </p>
               <div class="pt-4">
-                <a href="#/about" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black border-b-2 border-black pb-1 hover:text-accent2 hover:border-accent2 transition-colors">
+                <a href="#/about" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-white border-b-2 border-white pb-1 hover:text-accent2 hover:border-accent2 transition-colors">
                   LEARN MORE ABOUT US <i data-lucide="arrow-right" class="h-3 w-3 transition-transform group-hover:translate-x-1"></i>
                 </a>
               </div>
