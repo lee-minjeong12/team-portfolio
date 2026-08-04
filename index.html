@@ -667,10 +667,6 @@
 
     function renderHeader() {
       const isLogged = auth.isAuthenticated();
-      const pathname = window.location.hash;
-      const worksActive = pathname === "#/works" || pathname.startsWith("#/works/");
-      const aboutActive = pathname === "#/about";
-      const contactActive = pathname === "#/contact";
 
       return `
         <header class="fixed top-0 left-0 z-50 w-full border-b-2 border-black bg-white/90 backdrop-blur-md">
@@ -679,33 +675,11 @@
               <span class="text-2xl font-black tracking-tighter transition-colors group-hover:text-accent">CONTENTS CREATIVE 3TEAM</span>
               <span class="h-2 w-2 rounded-full bg-accent2 border border-black transition-transform group-hover:scale-150"></span>
             </a>
-            <nav class="flex items-center gap-8 sm:gap-12">
-              <ul class="flex items-center gap-6 sm:gap-8 text-xs font-bold tracking-widest">
-                <li>
-                  <a href="#/works" class="relative py-2 transition-colors hover:text-accent ${worksActive ? 'text-black font-black' : 'text-neutral-500'}">
-                    WORKS
-                    ${worksActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-accent2"></span>' : ''}
-                  </a>
-                </li>
-                <li>
-                  <a href="#/about" class="relative py-2 transition-colors hover:text-accent ${aboutActive ? 'text-black font-black' : 'text-neutral-500'}">
-                    ABOUT
-                    ${aboutActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-accent2"></span>' : ''}
-                  </a>
-                </li>
-                <li>
-                  <a href="#/contact" class="relative py-2 transition-colors hover:text-accent ${contactActive ? 'text-black font-black' : 'text-neutral-500'}">
-                    CONTACT
-                    ${contactActive ? '<span class="absolute bottom-0 left-0 h-[2px] w-full bg-accent2"></span>' : ''}
-                  </a>
-                </li>
-              </ul>
-              ${isLogged ? `
-                <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full border-2 border-black bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
-                  <i data-lucide="settings" class="h-3 w-3"></i> ADMIN
-                </a>
-              ` : ''}
-            </nav>
+            ${isLogged ? `
+              <a href="#/admin/projects" class="flex items-center gap-1.5 rounded-full border-2 border-black bg-black px-3.5 py-1.5 text-[10px] font-bold tracking-wider text-white transition-transform hover:scale-105">
+                <i data-lucide="settings" class="h-3 w-3"></i> ADMIN
+              </a>
+            ` : ''}
           </div>
         </header>
       `;
@@ -728,6 +702,8 @@
                   <i data-lucide="arrow-up-right" class="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
                 </a>
                 <div class="flex gap-6 mt-4">
+                  <a href="#/about" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-accent2 transition-colors">ABOUT</a>
+                  <a href="#/contact" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-accent2 transition-colors">CONTACT</a>
                   <a href="${settings.instagram_url}" target="_blank" class="text-xs font-bold tracking-widest text-neutral-400 hover:text-accent2 transition-colors">INSTAGRAM</a>
                 </div>
               </div>
@@ -790,24 +766,11 @@
     // Home View
     function renderHomeView() {
       const settings = db.getSettings();
-      const featured = db.getProjects().filter(p => p.is_featured).slice(0, 3);
-      
       const contentDiv = document.getElementById("visitor-view-content");
-      
-      let featuredHtml = "";
-      if (featured.length > 0) {
-        featuredHtml = featured.map(p => renderPortfolioCard(p)).join("");
-      } else {
-        featuredHtml = `
-          <div class="col-span-full py-20 text-center text-sm text-neutral-400 border border-dashed border-neutral-200">
-            등록된 대표 프로젝트가 없습니다. 어드민 페이지에서 '대표 지정'을 선택해주세요.
-          </div>
-        `;
-      }
 
       contentDiv.innerHTML = `
         <!-- Hero Section -->
-        <section class="relative flex min-h-[70vh] flex-col justify-center px-6 sm:px-8 py-20 max-w-7xl mx-auto w-full overflow-hidden">
+        <section class="relative flex min-h-[60vh] flex-col justify-center px-6 sm:px-8 py-20 max-w-7xl mx-auto w-full overflow-hidden">
           <span class="outline-mint select-none pointer-events-none absolute -top-10 right-0 sm:right-10 text-[220px] sm:text-[320px] font-black leading-none rotate-12 hidden sm:block">✳</span>
           <div class="max-w-4xl space-y-6 sm:space-y-8 relative z-10">
             <div class="inline-flex items-center gap-2 rounded-full border-2 border-black bg-white px-3 py-1 text-[10px] font-bold tracking-wider text-black uppercase">
@@ -816,7 +779,7 @@
             <h1 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight" style="line-height: calc(1em + 25px) !important;">${settings.hero_title}</h1>
             <p class="text-base sm:text-lg text-neutral-500 max-w-4xl font-light leading-relaxed sm:whitespace-nowrap" style="word-break: keep-all;">${settings.hero_subtitle}</p>
             <div class="pt-4 flex gap-4">
-              <a href="#/works" class="group flex items-center gap-2 rounded-full border-2 border-black bg-black px-6 py-3.5 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
+              <a href="javascript:void(0)" onclick="document.getElementById('works-archive').scrollIntoView({behavior:'smooth'})" class="group flex items-center gap-2 rounded-full border-2 border-black bg-black px-6 py-3.5 text-xs font-bold tracking-widest text-white transition-transform hover:scale-105">
                 VIEW WORKS <i data-lucide="move-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
               </a>
               <a href="#/contact" class="flex items-center gap-2 rounded-full border-2 border-black px-6 py-3.5 text-xs font-bold tracking-widest text-black hover:bg-accent2 hover:text-white transition-colors">
@@ -826,22 +789,9 @@
           </div>
         </section>
 
-        <!-- Featured Works Grid -->
-        <section class="w-full bg-white border-y-2 border-black py-24 sm:py-32">
-          <div class="max-w-7xl mx-auto px-6 sm:px-8">
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
-              <div class="space-y-3">
-                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">Featured Works <span class="deco-asterisk">✳</span></span>
-                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">우리의 생각을 증명하는 대표 프로젝트</h2>
-              </div>
-              <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent2 transition-colors">
-                ALL PROJECTS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
-              </a>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-              ${featuredHtml}
-            </div>
-          </div>
+        <!-- Full Works Archive -->
+        <section class="w-full bg-white border-y-2 border-black">
+          ${renderWorksArchiveMarkup(false)}
         </section>
 
         <!-- Brief Studio Intro -->
@@ -894,10 +844,9 @@
     let currentSortOrder = "latest"; // "latest" or "oldest"
     let currentYearFilter = "all"; // "all" or specific year string
 
-    function renderWorksView() {
+    function renderWorksArchiveMarkup(showPageTitle) {
       const categories = db.getCategories();
       const projects = db.getProjects();
-      const contentDiv = document.getElementById("visitor-view-content");
 
       // Extract unique available years in descending order
       const availableYears = Array.from(new Set(projects.map(p => String(p.year)).filter(Boolean))).sort((a, b) => b - a);
@@ -936,9 +885,10 @@
         `;
       }
 
-      contentDiv.innerHTML = `
-        <div class="relative mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24 overflow-hidden">
+      return `
+        <div class="relative mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24 overflow-hidden" id="works-archive">
           <span class="outline-orange select-none pointer-events-none absolute -top-6 right-0 sm:right-6 text-[160px] font-black leading-none rotate-6 hidden lg:block">✳</span>
+          ${showPageTitle ? `
           <!-- Page Title -->
           <div class="relative z-10 space-y-4 mb-16 max-w-4xl">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR ARCHIVE <span class="deco-asterisk">✳</span></span>
@@ -947,9 +897,17 @@
               브랜딩부터 영상 편집, 디지털 콘텐츠 디자인까지 콘텐츠 크리에이티브3팀이 수행한 다양한 필드의 작업물들을 탐색할 수 있습니다.
             </p>
           </div>
+          ` : `
+          <div class="relative z-10 flex items-end justify-between gap-6 mb-12 max-w-4xl">
+            <div class="space-y-3">
+              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR WORKS <span class="deco-asterisk">✳</span></span>
+              <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">우리가 만든 모든 프로젝트</h2>
+            </div>
+          </div>
+          `}
 
           <!-- Category & Filter Bar -->
-          <div class="border-b-2 border-black mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
+          <div class="relative z-10 border-b-2 border-black mb-12 flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4">
             <!-- Category Tabs -->
             <div class="flex gap-3 overflow-x-auto scrollbar-none min-w-max pb-1 md:pb-0">
               <button onclick="setWorksFilter('all')" class="rounded-full border-2 border-black px-4 py-1.5 text-xs font-bold tracking-widest uppercase transition-colors duration-300 ${currentFilterSlug === 'all' ? 'bg-black text-white' : 'bg-white text-black hover:bg-accent hover:text-white hover:border-accent'}">
@@ -985,29 +943,37 @@
           </div>
 
           <!-- Projects Portfolio Grid (2-column layout with larger thumbnails) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+          <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
             ${gridHtml}
           </div>
         </div>
       `;
     }
 
+    function renderWorksView() {
+      const contentDiv = document.getElementById("visitor-view-content");
+      contentDiv.innerHTML = renderWorksArchiveMarkup(true);
+    }
+
     // Filter Trigger Handlers
     window.setWorksFilter = function(slug) {
       currentFilterSlug = slug;
-      renderWorksView();
+      if (window.location.hash.startsWith("#/works")) renderWorksView();
+      else renderHomeView();
       if (typeof lucide !== "undefined") lucide.createIcons();
     };
 
     window.setWorksSortOrder = function(order) {
       currentSortOrder = order;
-      renderWorksView();
+      if (window.location.hash.startsWith("#/works")) renderWorksView();
+      else renderHomeView();
       if (typeof lucide !== "undefined") lucide.createIcons();
     };
 
     window.setWorksYearFilter = function(year) {
       currentYearFilter = year;
-      renderWorksView();
+      if (window.location.hash.startsWith("#/works")) renderWorksView();
+      else renderHomeView();
       if (typeof lucide !== "undefined") lucide.createIcons();
     };
 
@@ -1760,7 +1726,6 @@
                     <th class="p-4">프로젝트 정보</th>
                     <th className="p-4">카테고리</th>
                     <th class="p-4 text-center">공개 설정</th>
-                    <th class="p-4 text-center">대표 지정</th>
                     <th class="p-4 text-right pr-6 w-40">관리 작업</th>
                   </tr>
                 </thead>
@@ -1792,11 +1757,6 @@
                         <td class="p-4 text-center">
                           <button onclick="toggleProjPublished('${proj.id}', ${proj.is_published})" class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide border cursor-pointer transition-all ${proj.is_published ? 'bg-emerald-950/20 border-emerald-800 text-emerald-400' : 'bg-neutral-950 border-neutral-800 text-neutral-500'}">
                             ${proj.is_published ? '<i data-lucide="eye" class="h-3 w-3"></i> 공개중' : '<i data-lucide="eye-off" class="h-3 w-3"></i> 비공개'}
-                          </button>
-                        </td>
-                        <td class="p-4 text-center">
-                          <button onclick="toggleProjFeatured('${proj.id}', ${proj.is_featured})" class="p-1.5 rounded-lg border cursor-pointer transition-all ${proj.is_featured ? 'bg-amber-950/20 border-amber-800 text-amber-400' : 'bg-neutral-950 border-neutral-800 text-neutral-600 hover:text-neutral-400'}">
-                            <i data-lucide="star" class="h-4 w-4 fill-current"></i>
                           </button>
                         </td>
                         <td class="p-4 text-right pr-6 space-x-1.5">
@@ -1891,10 +1851,6 @@
                       <span>공개 여부</span>
                       <input type="checkbox" id="f-published" class="w-4 h-4 rounded text-accent bg-neutral-900 border-neutral-800 focus:ring-accent" />
                     </div>
-                    <div class="flex items-center justify-between text-xs text-neutral-400">
-                      <span>대표 지정</span>
-                      <input type="checkbox" id="f-featured" class="w-4 h-4 rounded text-accent bg-neutral-900 border-neutral-800 focus:ring-accent" />
-                    </div>
                     <div class="space-y-1 pt-1">
                       <label class="text-[9px] font-bold text-neutral-400 uppercase">정렬 순서</label>
                       <input type="number" id="f-order" value="0" class="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1 text-xs text-white" />
@@ -1970,16 +1926,6 @@
       }
     };
 
-    window.toggleProjFeatured = function(id, current) {
-      const proj = db.getProjectById(id);
-      if (proj) {
-        proj.is_featured = !current;
-        db.saveProject(proj);
-        renderAdminProjectsView();
-        if (typeof lucide !== "undefined") lucide.createIcons();
-      }
-    };
-
     window.softDeleteProj = function(id) {
       if (confirm("이 프로젝트를 비공개 처리(Soft Delete)하시겠습니까?")) {
         db.deleteProject(id);
@@ -2046,7 +1992,6 @@
           renderScopeButtons();
           
           document.getElementById("f-published").checked = proj.is_published;
-          document.getElementById("f-featured").checked = proj.is_featured;
           document.getElementById("f-order").value = proj.sort_order;
           document.getElementById("f-video").value = proj.video_url || "";
 
@@ -2067,7 +2012,6 @@
         // Create mode
         document.getElementById("modal-title").innerText = "신규 프로젝트 등록";
         document.getElementById("f-published").checked = true;
-        document.getElementById("f-featured").checked = false;
         document.getElementById("f-order").value = "0";
         document.getElementById("thumb-preview-box").classList.add("hidden");
         currentGalleryUrls = [];
@@ -2179,7 +2123,6 @@
         scope_of_work: [...currentScopeTags],
         impact: document.getElementById("f-impact").value.trim(),
         is_published: document.getElementById("f-published").checked,
-        is_featured: document.getElementById("f-featured").checked,
         sort_order: Number(document.getElementById("f-order").value),
         video_url: document.getElementById("f-video").value,
         thumbnail_url: document.getElementById("f-thumb-url").value,
