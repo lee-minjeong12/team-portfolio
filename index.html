@@ -726,7 +726,7 @@
       const settings = db.getSettings();
       return `
         <footer class="w-full border-t-2 border-black bg-[#111111] text-white">
-          <div class="mx-auto max-w-7xl px-6 py-16 sm:px-8 sm:py-20">
+          <div class="mx-auto max-w-7xl px-3 py-16 sm:px-4 sm:py-20">
             <div class="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-8">
               <div>
                 <h3 class="text-xl font-black tracking-tight text-white mb-4">CONTENTS CREATIVE 3TEAM</h3>
@@ -809,7 +809,7 @@
         <section id="hero-motion" class="relative w-full bg-black text-white overflow-hidden min-h-[100vh] sm:min-h-[92vh] flex flex-col justify-center">
           <div id="hero-cursor-dot" class="pointer-events-none fixed z-[999] rounded-full bg-accent2 opacity-0" style="width:18px;height:18px; left:0; top:0; transform:translate(-50%,-50%); transition: opacity 200ms ease-out, width 200ms ease-out, height 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out;"></div>
 
-          <div class="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-8 space-y-1 sm:space-y-2 py-24 select-none">
+          <div class="relative z-10 mx-auto w-full max-w-7xl px-3 sm:px-4 space-y-1 sm:space-y-2 py-24 select-none">
             <h1 onclick="handleLogoClick(event)" class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0" style="transition: transform 220ms ease-out;">CONTENTS</h1>
             <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="3" style="transition: transform 220ms ease-out;">CREATIVE</h1>
             <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="5.5" style="transition: transform 220ms ease-out;">3TEAM</h1>
@@ -823,7 +823,7 @@
 
         <!-- Brief Studio Intro -->
         <section class="w-full bg-black">
-          <div class="py-24 sm:py-32 max-w-7xl mx-auto w-full px-6 sm:px-8">
+          <div class="py-24 sm:py-32 max-w-7xl mx-auto w-full px-3 sm:px-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 items-start">
               <div class="lg:col-span-4 space-y-3">
                 <span class="text-[10px] font-bold tracking-widest text-accent2 uppercase">ABOUT CONTENTS CREATIVE 3TEAM</span>
@@ -849,7 +849,7 @@
 
         <!-- CTA Banner -->
         <section class="relative overflow-hidden bg-black text-white py-24 sm:py-32 text-center">
-          <div class="max-w-7xl mx-auto px-6 sm:px-8 space-y-6 sm:space-y-8 relative z-10">
+          <div class="max-w-7xl mx-auto px-3 sm:px-4 space-y-6 sm:space-y-8 relative z-10">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK WITH US</span>
             <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto" style="line-height: calc(1em + 25px) !important;">
               새로운 비주얼 스토리를 <br />함께 시작할 준비가 되셨나요?
@@ -999,12 +999,9 @@
       const allBtnClass = currentFilterSlug === 'all'
         ? "text-accent2"
         : (dark ? "text-white/50 hover:text-white" : "text-neutral-400 hover:text-black");
-      const selectClass = dark
-        ? "bg-transparent border-b border-white/40 rounded-none px-1 py-0.5 text-xs font-bold text-white cursor-pointer focus:outline-none hover:border-accent2 transition-colors"
-        : "bg-transparent border-b border-neutral-900 rounded-none px-1 py-0.5 text-xs font-bold text-neutral-900 cursor-pointer focus:outline-none hover:border-accent transition-colors";
 
       return `
-        <div class="relative mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24 overflow-hidden" id="works-archive">
+        <div class="relative mx-auto w-full max-w-7xl px-3 py-16 sm:px-4 sm:py-24 overflow-hidden" id="works-archive">
           ${showPageTitle ? `
           <!-- Page Title -->
           <div class="relative z-10 space-y-4 mb-16 max-w-4xl">
@@ -1041,23 +1038,19 @@
             </div>
 
             <!-- Sort & Year Controls -->
-            <div class="flex items-center gap-6 self-end md:self-auto">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 self-end md:self-auto">
               <!-- Sort Order -->
-              <div class="flex items-center gap-1.5">
-                <span class="text-[10px] font-bold ${dark ? 'text-neutral-500' : 'text-neutral-400'} uppercase tracking-wider">정렬</span>
-                <select onchange="setWorksSortOrder(this.value)" class="${selectClass}">
-                  <option value="latest" ${currentSortOrder === 'latest' ? 'selected' : ''}>최신순</option>
-                  <option value="oldest" ${currentSortOrder === 'oldest' ? 'selected' : ''}>오래된순</option>
-                </select>
+              <div class="flex items-center gap-3">
+                <button onclick="setWorksSortOrder('latest')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${currentSortOrder === 'latest' ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">LATEST</button>
+                <button onclick="setWorksSortOrder('oldest')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${currentSortOrder === 'oldest' ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">OLDEST</button>
               </div>
 
               <!-- Year Filter -->
-              <div class="flex items-center gap-1.5">
-                <span class="text-[10px] font-bold ${dark ? 'text-neutral-500' : 'text-neutral-400'} uppercase tracking-wider">연도</span>
-                <select onchange="setWorksYearFilter(this.value)" class="${selectClass}">
-                  <option value="all" ${currentYearFilter === 'all' ? 'selected' : ''}>전체 연도</option>
-                  ${availableYears.map(y => `<option value="${y}" ${String(currentYearFilter) === String(y) ? 'selected' : ''}>${y}년</option>`).join("")}
-                </select>
+              <div class="flex items-center gap-3">
+                <button onclick="setWorksYearFilter('all')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${currentYearFilter === 'all' ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">ALL YEARS</button>
+                ${availableYears.map(y => `
+                  <button onclick="setWorksYearFilter('${y}')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${String(currentYearFilter) === String(y) ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">${y}</button>
+                `).join("")}
               </div>
             </div>
           </div>
@@ -1152,7 +1145,7 @@
       if (related.length > 0) {
         relatedHtml = `
           <section class="w-full border-t-2 border-white/10 bg-black">
-            <div class="py-24 max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="py-24 max-w-7xl mx-auto px-3 sm:px-4">
               <div class="flex items-end justify-between mb-12">
                 <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">ETC</h2>
                 <a href="#/works" class="group inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-tight text-white/60 hover:text-accent2 transition-colors">
@@ -1181,7 +1174,7 @@
 
         <!-- Details Info -->
         <section class="w-full bg-black">
-          <div class="max-w-7xl mx-auto px-6 py-16 sm:px-8 sm:py-24">
+          <div class="max-w-7xl mx-auto px-3 py-16 sm:px-4 sm:py-24">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16">
             <!-- Sidebar info -->
             <div class="lg:col-span-4 space-y-8 border-l border-white/15 pl-6 lg:order-2">
@@ -1252,7 +1245,7 @@
         <!-- Video Player -->
         ${embedUrl ? `
           <section class="w-full bg-black py-16 sm:py-24">
-            <div class="max-w-5xl mx-auto px-6">
+            <div class="max-w-5xl mx-auto px-3 sm:px-4">
               <div class="space-y-2 mb-8 text-center">
                 <span class="text-[10px] font-bold tracking-widest text-accent uppercase">VIDEO IN ACTION</span>
                 <h3 class="text-xl sm:text-2xl font-bold text-white tracking-tight">프로젝트 필름</h3>
@@ -1267,7 +1260,7 @@
         <!-- Image Gallery Showcase -->
         ${project.media_urls && project.media_urls.length > 0 ? `
           <section class="w-full border-t-2 border-white/10 py-24 bg-black">
-            <div class="max-w-7xl mx-auto px-6 sm:px-8">
+            <div class="max-w-7xl mx-auto px-3 sm:px-4">
               <div class="flex flex-col gap-8 sm:gap-12">
                 ${project.media_urls.map(url => `
                   <div class="w-full bg-black overflow-hidden">
@@ -1281,7 +1274,7 @@
 
         <!-- PDF Export Link -->
         <section class="w-full py-10 bg-black">
-          <div class="max-w-7xl mx-auto px-6 sm:px-8">
+          <div class="max-w-7xl mx-auto px-3 sm:px-4">
             <a href="#/works/${project.slug}/pdf" class="text-xl sm:text-2xl font-black uppercase tracking-tight text-white/60 hover:text-accent2 transition-colors">
               PDF
             </a>
@@ -1390,7 +1383,7 @@
     function renderAboutView() {
       const contentDiv = document.getElementById("visitor-view-content");
       contentDiv.innerHTML = `
-        <section class="relative overflow-hidden mx-auto w-full max-w-7xl px-6 py-16 sm:px-8 sm:py-24">
+        <section class="relative overflow-hidden mx-auto w-full max-w-7xl px-3 py-16 sm:px-4 sm:py-24">
           <div class="relative z-10 max-w-3xl space-y-6">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WHO WE ARE</span>
             <h1 class="text-4xl sm:text-6xl font-black tracking-tight" style="line-height: calc(1em + 25px) !important;">우리는 브랜드의 감각을 깨우는 크리에이터 팀입니다.</h1>
@@ -1403,7 +1396,7 @@
 
         <!-- Core Strengths -->
         <section class="bg-white border-y-2 border-black py-24 sm:py-32">
-          <div class="max-w-7xl mx-auto px-6 sm:px-8">
+          <div class="max-w-7xl mx-auto px-3 sm:px-4">
             <div class="max-w-2xl space-y-3 mb-16">
               <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OUR STRENGTHS</span>
               <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">콘텐츠 크리에이티브3팀이 일하는 방식과 경쟁력</h2>
@@ -1441,7 +1434,7 @@
         </section>
 
         <!-- Processes -->
-        <section class="py-24 sm:py-32 max-w-7xl mx-auto px-6 sm:px-8">
+        <section class="py-24 sm:py-32 max-w-7xl mx-auto px-3 sm:px-4">
           <div class="max-w-2xl space-y-3 mb-16">
             <span class="text-[10px] font-bold tracking-widest text-accent uppercase">WORK PROCESS</span>
             <h2 class="text-3xl font-extrabold tracking-tight" style="line-height: calc(1em + 25px) !important;">협업 프로세스</h2>
@@ -1479,7 +1472,7 @@
       const contentDiv = document.getElementById("visitor-view-content");
 
       contentDiv.innerHTML = `
-        <div class="mx-auto w-full max-w-4xl px-6 py-16 sm:px-8 sm:py-24">
+        <div class="mx-auto w-full max-w-4xl px-3 py-16 sm:px-4 sm:py-24">
           <div class="space-y-12">
             
             <div class="space-y-4">
