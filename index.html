@@ -190,6 +190,7 @@
         ],
         scope_of_work: ["콘텐츠 디자인", "굿즈 디자인", "오프라인 디자인"],
         impact: "리브랜딩 이후 사내외 브랜드 인지도 조사에서 '신뢰감 있는 하이테크 이미지' 응답률이 상승, 후속 캠페인 및 전시 부스 디자인 과업으로 연계",
+        awards: "2025 Red Dot Design Award Winner",
         thumbnail_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200",
         media_urls: [
           "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1200",
@@ -1103,22 +1104,18 @@
                   <i data-lucide="calendar" class="h-4 w-4 text-neutral-400"></i> ${project.year}
                 </p>
               </div>
-              <div>
-                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">ROLE & SCOPE</span>
-                <p class="text-base font-bold flex items-center gap-2">
-                  <i data-lucide="user" class="h-4 w-4 text-neutral-400"></i> ${project.role || "디자인 & 제작"}
-                </p>
-              </div>
+              ${project.awards ? `
+                <div>
+                  <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">AWARDS</span>
+                  <p class="text-base font-bold flex items-center gap-2">
+                    <i data-lucide="award" class="h-4 w-4 text-accent2"></i> ${project.awards}
+                  </p>
+                </div>
+              ` : ''}
             </div>
 
             <!-- Description -->
             <div class="lg:col-span-8 space-y-12 lg:order-1">
-              <div class="space-y-4">
-                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">PROJECT OVERVIEW</span>
-                <h2 class="text-2xl font-bold tracking-tight">프로젝트 소개</h2>
-                <p class="text-base sm:text-lg text-neutral-600 font-light leading-relaxed whitespace-pre-line">${project.description}</p>
-              </div>
-
               ${project.solution && project.solution.length > 0 ? `
                 <div class="space-y-4">
                   <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SOLUTION</span>
@@ -1862,12 +1859,8 @@
                     </div>
                   </div>
                   <div class="space-y-1.5">
-                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">담당 역할 / 작업 범위</label>
-                    <input type="text" id="f-role" placeholder="예: Art Direction" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
-                  </div>
-                  <div class="space-y-1.5">
-                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">상세 프로젝트 설명</label>
-                    <textarea id="f-desc" rows="6" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">수상 내역 (Awards, 선택 입력 · 비워두면 미노출)</label>
+                    <input type="text" id="f-awards" placeholder="예: 2025 대한민국 디자인대상 우수상" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
                   </div>
 
                   <!-- PDF Template Fields -->
@@ -2046,8 +2039,7 @@
           document.getElementById("f-client").value = proj.client_name;
           document.getElementById("f-cat").value = proj.category_id;
           document.getElementById("f-year").value = proj.year;
-          document.getElementById("f-role").value = proj.role || "";
-          document.getElementById("f-desc").value = proj.description || "";
+          document.getElementById("f-awards").value = proj.awards || "";
           document.getElementById("f-solution").value = (proj.solution || []).join("\n");
           document.getElementById("f-impact").value = proj.impact || "";
           currentScopeTags = [...(proj.scope_of_work || [])];
@@ -2182,8 +2174,7 @@
         client_name: document.getElementById("f-client").value,
         category_id: document.getElementById("f-cat").value,
         year: Number(document.getElementById("f-year").value),
-        role: document.getElementById("f-role").value,
-        description: document.getElementById("f-desc").value,
+        awards: document.getElementById("f-awards").value.trim(),
         solution: document.getElementById("f-solution").value.split("\n").map(s => s.trim()).filter(Boolean),
         scope_of_work: [...currentScopeTags],
         impact: document.getElementById("f-impact").value.trim(),
