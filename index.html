@@ -810,9 +810,9 @@
           <div id="hero-cursor-dot" class="pointer-events-none fixed z-[999] rounded-full bg-accent2 opacity-0" style="width:18px;height:18px; left:0; top:0; transform:translate(-50%,-50%); transition: opacity 200ms ease-out, width 200ms ease-out, height 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out;"></div>
 
           <div class="relative z-10 mx-auto w-full max-w-7xl px-3 sm:px-4 space-y-1 sm:space-y-2 py-24 select-none">
-            <h1 onclick="handleLogoClick(event)" class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0" style="transition: transform 220ms ease-out;">CONTENTS</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="3" style="transition: transform 220ms ease-out;">CREATIVE</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="5.5" style="transition: transform 220ms ease-out;">3TEAM</h1>
+            <h1 onclick="handleLogoClick(event)" class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0">CONTENTS</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="3.5">CREATIVE</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="6.5">3TEAM</h1>
           </div>
         </section>
 
@@ -888,24 +888,48 @@
       const hero = document.getElementById("hero-motion");
       if (!hero) return;
       const dot = document.getElementById("hero-cursor-dot");
-      const lines = hero.querySelectorAll(".hero-line");
+      const lines = Array.from(hero.querySelectorAll(".hero-line"));
 
-      hero.addEventListener("mousemove", function(e) {
+      // Momentum-driven drift: fast rightward mouse movement snaps the lines
+      // out aggressively, then they settle back down over time (spring-like),
+      // rather than being rigidly pinned to the raw cursor X position.
+      let drift = 0;
+      let lastX = null;
+      let rafId = null;
+
+      function applyOffsets() {
         const rect = hero.getBoundingClientRect();
-        const relX = e.clientX - rect.left;
-        const delta = relX - rect.width / 2;
-
         lines.forEach(function(line) {
           const depth = parseFloat(line.dataset.depth) || 0;
-          // Only allow rightward motion (never move left past the left-aligned rest position),
-          // and clamp so the line never overflows past the right edge of the hero section.
-          const rawOffset = Math.max(0, delta * depth);
+          const rawOffset = Math.max(0, drift * depth);
           const naturalWidth = line.offsetWidth; // layout width is unaffected by the transform
           const naturalLeft = line.offsetLeft; // position within the (positioned) hero section, unaffected by transform
-          const maxOffset = Math.max(0, rect.width - naturalLeft - naturalWidth - 16);
+          const maxOffset = Math.max(0, rect.width - naturalLeft - naturalWidth - 4);
           const offset = Math.min(rawOffset, maxOffset);
           line.style.transform = "translateX(" + offset + "px)";
         });
+      }
+
+      function tick() {
+        drift *= 0.94;
+        if (drift < 0.5) drift = 0;
+        applyOffsets();
+        if (drift > 0) {
+          rafId = requestAnimationFrame(tick);
+        } else {
+          rafId = null;
+        }
+      }
+
+      hero.addEventListener("mousemove", function(e) {
+        if (lastX !== null) {
+          const movementX = e.clientX - lastX;
+          drift += movementX > 0 ? movementX * 2.4 : movementX * 0.7;
+          drift = Math.max(0, Math.min(drift, 260));
+        }
+        lastX = e.clientX;
+        applyOffsets();
+        if (!rafId) rafId = requestAnimationFrame(tick);
 
         if (dot) {
           dot.style.left = e.clientX + "px";
@@ -915,13 +939,12 @@
 
       hero.addEventListener("mouseenter", function() {
         if (dot) dot.style.opacity = "1";
+        lastX = null;
       });
 
       hero.addEventListener("mouseleave", function() {
         if (dot) dot.style.opacity = "0";
-        lines.forEach(function(line) {
-          line.style.transform = "translateX(0px)";
-        });
+        lastX = null;
       });
 
       lines.forEach(function(line) {
