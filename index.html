@@ -208,7 +208,7 @@
         id: "proj-1",
         title: "현대 모빌리티 브랜드 리브랜딩",
         slug: "hyundai-mobility-rebranding",
-        category_id: "cat-design",
+        category_ids: ["cat-design"],
         client_name: "Hyundai Mobility",
         year: 2025,
         role: "Brand Identity Design & Guidelines",
@@ -238,7 +238,7 @@
         id: "proj-2",
         title: "글로벌 패션 테크 기업 2026 브랜드 필름",
         slug: "fashion-tech-brand-film-2026",
-        category_id: "cat-edit",
+        category_ids: ["cat-edit"],
         client_name: "AURA Fashion Tech",
         year: 2026,
         role: "Video Editing & Color Grading",
@@ -266,7 +266,7 @@
         id: "proj-3",
         title: "친환경 에코 라이프스타일 패키지 디자인",
         slug: "eco-lifestyle-package-design",
-        category_id: "cat-film",
+        category_ids: ["cat-film", "cat-design"],
         client_name: "Greenery Lab",
         year: 2025,
         role: "Package & Editorial Design",
@@ -294,7 +294,7 @@
         id: "proj-4",
         title: "신선식품 커머스 'FRESCO' 인스타그램 캠페인",
         slug: "fresco-instagram-campaign",
-        category_id: "cat-sns",
+        category_ids: ["cat-sns"],
         client_name: "Fresco Corporation",
         year: 2026,
         role: "Art Direction & Social Content Creation",
@@ -712,8 +712,11 @@
     };
 
     function renderHeader() {
+      const hash = window.location.hash || "#/";
+      const isWorksContext = hash === "#/works" || hash.startsWith("#/works/");
+      if (!isWorksContext) return "";
       return `
-        <div class="fixed top-6 right-6 sm:top-8 sm:right-10 z-[70]">
+        <div class="fixed top-6 left-6 sm:top-8 sm:left-10 z-[70]">
           <a href="javascript:void(0)" onclick="goBackToPortfolio(event)" class="text-xs sm:text-sm font-black uppercase tracking-tight select-none" style="color:#ffffff; mix-blend-mode: difference;">CONTENTS CREATIVE 3TEAM</a>
         </div>
       `;
@@ -750,8 +753,10 @@
     // ==========================================
     function renderPortfolioCard(p, dark) {
       const categories = db.getCategories();
-      const cat = categories.find(c => c.id === p.category_id);
-      const catName = cat ? cat.name : "PROJECT";
+      const ids = p.category_ids || (p.category_id ? [p.category_id] : []);
+      const catName = ids.length > 0
+        ? ids.map(id => { const c = categories.find(c => c.id === id); return c ? c.name : null; }).filter(Boolean).join(" / ")
+        : "PROJECT";
       const cardBorderClass = dark
         ? "border-0"
         : "border-2 border-black shadow-[6px_6px_0px_0px_#111111] hover:shadow-[3px_3px_0px_0px_#111111]";
@@ -849,14 +854,6 @@
             <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white max-w-3xl mx-auto" style="line-height: calc(1em + 25px) !important;">
               새로운 비주얼 스토리를 <br />함께 시작할 준비가 되셨나요?
             </h2>
-            <p class="text-sm sm:text-base text-neutral-400 max-w-xl mx-auto font-light leading-relaxed">
-              협업 문의부터 브랜드 분석 제안까지 언제든 열려있습니다. 콘텐츠 크리에이티브3팀과 함께 브랜드 가치를 극대화해보세요.
-            </p>
-            <div class="pt-4">
-              <a href="#/contact" class="group inline-flex items-center gap-2 text-xl sm:text-2xl font-black uppercase tracking-tight text-accent2 hover:text-white transition-colors">
-                START A PROJECT <i data-lucide="move-right" class="h-6 w-6 transition-transform group-hover:translate-x-1"></i>
-              </a>
-            </div>
           </div>
         </section>
       `;
@@ -961,7 +958,8 @@
       let filtered = projects.filter(p => {
         const matchesCategory = currentFilterSlug === "all" || (function() {
           const cat = categories.find(c => c.slug === currentFilterSlug);
-          return p.category_id === (cat ? cat.id : null);
+          const ids = p.category_ids || (p.category_id ? [p.category_id] : []);
+          return cat ? ids.includes(cat.id) : false;
         })();
 
         const matchesYear = currentYearFilter === "all" || String(p.year) === String(currentYearFilter);
@@ -1119,10 +1117,12 @@
         return;
       }
 
-      // Load category name
+      // Load category names (multi-category support)
       const categories = db.getCategories();
-      const cat = categories.find(c => c.id === project.category_id);
-      const catName = cat ? cat.name : "PROJECT";
+      const projectCategoryIds = project.category_ids || (project.category_id ? [project.category_id] : []);
+      const catName = projectCategoryIds.length > 0
+        ? projectCategoryIds.map(id => { const c = categories.find(c => c.id === id); return c ? c.name : null; }).filter(Boolean).join(" / ")
+        : "PROJECT";
 
       // Parse YouTube URL to embed
       const getEmbedVideoUrl = (url) => {
@@ -1139,9 +1139,13 @@
       };
       const embedUrl = getEmbedVideoUrl(project.video_url);
 
-      // Related recommendations
+      // Related recommendations (any overlapping category)
       const related = db.getProjects()
-        .filter(p => p.category_id === project.category_id && p.id !== project.id)
+        .filter(p => {
+          if (p.id === project.id) return false;
+          const ids = p.category_ids || (p.category_id ? [p.category_id] : []);
+          return ids.some(id => projectCategoryIds.includes(id));
+        })
         .slice(0, 3);
       
       let relatedHtml = "";
@@ -1150,11 +1154,8 @@
           <section class="w-full border-t-2 border-white/10 bg-black">
             <div class="py-24 max-w-7xl mx-auto px-6 sm:px-8">
               <div class="flex items-end justify-between mb-12">
-                <div class="space-y-3">
-                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">EXPLORE MORE</span>
-                  <h2 class="text-2xl font-extrabold tracking-tight text-white">관련 프로젝트</h2>
-                </div>
-                <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-white hover:text-accent2 transition-colors">
+                <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">ETC</h2>
+                <a href="#/works" class="group inline-flex items-center gap-1.5 text-sm font-black uppercase tracking-tight text-white/60 hover:text-accent2 transition-colors">
                   ALL WORKS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
                 </a>
               </div>
@@ -1172,9 +1173,6 @@
           ${project.thumbnail_url ? `<img src="${project.thumbnail_url}" alt="" class="w-full h-full object-cover opacity-75" />` : ''}
           <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-6 sm:p-12">
             <div class="max-w-7xl mx-auto w-full space-y-2">
-              <a href="#/works" class="inline-flex items-center gap-1 text-[10px] font-bold tracking-widest text-neutral-300 hover:text-white uppercase transition-colors mb-4">
-                <i data-lucide="arrow-left" class="h-3 w-3"></i> BACK TO ARCHIVE
-              </a>
               <div><span class="inline-block text-[10px] font-bold tracking-widest text-accent uppercase">${catName}</span></div>
               <h1 class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-white" style="line-height: calc(1em + 25px) !important;">${project.title}</h1>
             </div>
@@ -1228,9 +1226,9 @@
                 <div class="space-y-4">
                   <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SCOPE OF WORK</span>
                   <h2 class="text-2xl font-bold tracking-tight text-white">작업 범위</h2>
-                  <div class="flex flex-wrap gap-2.5 pt-2">
+                  <div class="flex flex-wrap gap-x-4 gap-y-2 pt-2">
                     ${project.scope_of_work.map(tag => `
-                      <span class="inline-block rounded-full border-2 border-white/80 bg-accent2 px-4 py-2 text-xs font-bold tracking-wide text-white">${tag}</span>
+                      <span class="text-sm font-black uppercase tracking-tight text-white">${tag}</span>
                     `).join("")}
                   </div>
                 </div>
@@ -1282,9 +1280,9 @@
         ` : ''}
 
         <!-- PDF Export Link -->
-        <section class="w-full py-10 border-t-2 border-white/10 bg-black">
+        <section class="w-full py-10 bg-black">
           <div class="max-w-7xl mx-auto px-6 sm:px-8">
-            <a href="#/works/${project.slug}/pdf" class="text-xs font-black uppercase tracking-tight text-white/60 hover:text-accent2 transition-colors">
+            <a href="#/works/${project.slug}/pdf" class="text-xl sm:text-2xl font-black uppercase tracking-tight text-white/60 hover:text-accent2 transition-colors">
               PDF
             </a>
           </div>
@@ -1856,7 +1854,8 @@
                 </thead>
                 <tbody class="divide-y divide-neutral-800 text-xs">
                   ${projects.map(proj => {
-                    const cat = categories.find(c => c.id === proj.category_id);
+                    const projCatIds = proj.category_ids || (proj.category_id ? [proj.category_id] : []);
+                    const projCatNames = projCatIds.map(id => { const c = categories.find(c => c.id === id); return c ? c.name : null; }).filter(Boolean);
                     return `
                       <tr class="hover:bg-neutral-950/40 transition-colors">
                         <td class="p-4 pl-6">
@@ -1875,9 +1874,11 @@
                           </div>
                         </td>
                         <td class="p-4">
-                          <span class="text-[10px] font-bold px-2.5 py-1 bg-neutral-950 border border-neutral-800 rounded text-neutral-300">
-                            ${cat ? cat.name : '기타'}
-                          </span>
+                          <div class="flex flex-wrap gap-1">
+                            ${projCatNames.length > 0 ? projCatNames.map(name => `
+                              <span class="text-[10px] font-bold px-2.5 py-1 bg-neutral-950 border border-neutral-800 rounded text-neutral-300">${name}</span>
+                            `).join("") : `<span class="text-[10px] font-bold px-2.5 py-1 bg-neutral-950 border border-neutral-800 rounded text-neutral-300">기타</span>`}
+                          </div>
                         </td>
                         <td class="p-4 text-center">
                           <button onclick="toggleProjPublished('${proj.id}', ${proj.is_published})" class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide border cursor-pointer transition-all ${proj.is_published ? 'bg-emerald-950/20 border-emerald-800 text-emerald-400' : 'bg-neutral-950 border-neutral-800 text-neutral-500'}">
@@ -1927,21 +1928,19 @@
                     <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">웹 주소 슬러그 (Slug) *</label>
                     <input type="text" id="f-slug" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none focus:border-accent" />
                   </div>
-                  <div class="grid grid-cols-3 gap-4">
+                  <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                       <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">클라이언트 명 *</label>
                       <input type="text" id="f-client" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
                     </div>
                     <div class="space-y-1.5">
-                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">카테고리 *</label>
-                      <select id="f-cat" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none">
-                        ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join("")}
-                      </select>
-                    </div>
-                    <div class="space-y-1.5">
                       <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">작업 연도 *</label>
                       <input type="number" id="f-year" required class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none" />
                     </div>
+                  </div>
+                  <div class="space-y-1.5">
+                    <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">카테고리 * (복수 선택 가능)</label>
+                    <div id="f-cat-buttons" class="flex flex-wrap gap-2 pt-1"></div>
                   </div>
                   <div class="space-y-1.5">
                     <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">수상 내역 (Awards, 선택 입력 · 비워두면 미노출)</label>
@@ -2091,6 +2090,29 @@
       renderScopeButtons();
     };
 
+    let currentCategoryIds = [];
+    function renderCategoryButtons() {
+      const box = document.getElementById("f-cat-buttons");
+      if (!box) return;
+      const categories = db.getCategories();
+      box.innerHTML = categories.map(cat => {
+        const active = currentCategoryIds.includes(cat.id);
+        return `
+          <button type="button" onclick="toggleCategoryTag('${cat.id}')" class="rounded-full border px-3.5 py-1.5 text-[10px] font-bold tracking-wide transition-colors ${active ? 'bg-accent border-accent text-white' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-accent hover:text-white'}">
+            ${cat.name}
+          </button>
+        `;
+      }).join("");
+    }
+    window.toggleCategoryTag = function(id) {
+      if (currentCategoryIds.includes(id)) {
+        currentCategoryIds = currentCategoryIds.filter(t => t !== id);
+      } else {
+        currentCategoryIds.push(id);
+      }
+      renderCategoryButtons();
+    };
+
     let currentGalleryUrls = [];
     window.openProjectModal = function(id) {
       currentEditProjectId = id;
@@ -2108,7 +2130,8 @@
           document.getElementById("f-title").value = proj.title;
           document.getElementById("f-slug").value = proj.slug;
           document.getElementById("f-client").value = proj.client_name;
-          document.getElementById("f-cat").value = proj.category_id;
+          currentCategoryIds = [...(proj.category_ids || (proj.category_id ? [proj.category_id] : []))];
+          renderCategoryButtons();
           document.getElementById("f-year").value = proj.year;
           document.getElementById("f-awards").value = proj.awards || "";
           document.getElementById("f-solution").value = (proj.solution || []).join("\n");
@@ -2141,7 +2164,9 @@
         document.getElementById("thumb-preview-box").classList.add("hidden");
         currentGalleryUrls = [];
         currentScopeTags = [];
+        currentCategoryIds = [];
         renderScopeButtons();
+        renderCategoryButtons();
         renderModalGalleryList();
       }
 
@@ -2241,7 +2266,7 @@
         title: document.getElementById("f-title").value,
         slug: document.getElementById("f-slug").value,
         client_name: document.getElementById("f-client").value,
-        category_id: document.getElementById("f-cat").value,
+        category_ids: [...currentCategoryIds],
         year: Number(document.getElementById("f-year").value),
         awards: document.getElementById("f-awards").value.trim(),
         solution: document.getElementById("f-solution").value.split("\n").map(s => s.trim()).filter(Boolean),
