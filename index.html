@@ -574,6 +574,26 @@
       return { name: routes[hash] || "not-found", params: {} };
     }
 
+    // Track scroll position while on the home page, so we can restore it when
+    // returning via the "CONTENTS CREATIVE 3TEAM" back-link from a project page.
+    let savedHomeScrollY = 0;
+    let pendingScrollRestore = null;
+    window.addEventListener("scroll", function() {
+      if (window.location.hash === "#/" || window.location.hash === "") {
+        savedHomeScrollY = window.scrollY;
+      }
+    });
+
+    window.goBackToPortfolio = function(e) {
+      if (e) e.preventDefault();
+      if (window.location.hash === "#/" || window.location.hash === "") {
+        window.scrollTo({ top: savedHomeScrollY, behavior: "smooth" });
+        return;
+      }
+      pendingScrollRestore = savedHomeScrollY;
+      window.location.hash = "#/";
+    };
+
     // Main App Router Trigger
     function router() {
       const route = getRoute();
@@ -642,20 +662,29 @@
       };
 
       // Wrap rendering in View Transitions API if supported
+      const applyScrollPosition = function() {
+        if (pendingScrollRestore !== null) {
+          window.scrollTo(0, pendingScrollRestore);
+          pendingScrollRestore = null;
+        } else {
+          window.scrollTo(0, 0);
+        }
+      };
+
       if (document.startViewTransition) {
         document.startViewTransition(() => {
           render();
           if (typeof lucide !== "undefined") {
             lucide.createIcons();
           }
-          window.scrollTo(0, 0);
+          applyScrollPosition();
         });
       } else {
         render();
         if (typeof lucide !== "undefined") {
           lucide.createIcons();
         }
-        window.scrollTo(0, 0);
+        applyScrollPosition();
       }
     }
 
@@ -684,11 +713,9 @@
 
     function renderHeader() {
       return `
-        <header class="relative w-full border-b-2 border-black bg-black">
-          <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
-            <a href="#/" class="select-none" aria-label="Home"></a>
-          </div>
-        </header>
+        <div class="fixed top-6 right-6 sm:top-8 sm:right-10 z-[70]">
+          <a href="javascript:void(0)" onclick="goBackToPortfolio(event)" class="text-xs sm:text-sm font-black uppercase tracking-tight select-none" style="color:#ffffff; mix-blend-mode: difference;">CONTENTS CREATIVE 3TEAM</a>
+        </div>
       `;
     }
 
@@ -779,8 +806,8 @@
 
           <div class="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-8 space-y-1 sm:space-y-2 py-24 select-none">
             <h1 onclick="handleLogoClick(event)" class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0" style="transition: transform 220ms ease-out;">CONTENTS</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="2" style="transition: transform 220ms ease-out;">CREATIVE</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="3.5" style="transition: transform 220ms ease-out;">3TEAM</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="3" style="transition: transform 220ms ease-out;">CREATIVE</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="5.5" style="transition: transform 220ms ease-out;">3TEAM</h1>
           </div>
         </section>
 
@@ -1254,11 +1281,13 @@
           </section>
         ` : ''}
 
-        <!-- PDF Export Button -->
-        <section class="w-full py-16 flex justify-center border-t-2 border-white/10 bg-black">
-          <a href="#/works/${project.slug}/pdf" class="inline-flex items-center gap-2 rounded-full border-2 border-white bg-black px-6 py-3 text-xs font-bold tracking-widest text-white hover:bg-accent2 hover:text-white hover:border-accent2 transition-colors">
-            <i data-lucide="download" class="h-4 w-4"></i> PDF
-          </a>
+        <!-- PDF Export Link -->
+        <section class="w-full py-10 border-t-2 border-white/10 bg-black">
+          <div class="max-w-7xl mx-auto px-6 sm:px-8">
+            <a href="#/works/${project.slug}/pdf" class="text-xs font-black uppercase tracking-tight text-white/60 hover:text-accent2 transition-colors">
+              PDF
+            </a>
+          </div>
         </section>
 
         <!-- Related Block -->
