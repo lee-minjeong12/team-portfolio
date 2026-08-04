@@ -13,7 +13,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,7 +35,7 @@
             border: '#111111'
           },
           fontFamily: {
-            sans: ['"Plus Jakarta Sans"', '"Noto Sans KR"', 'system-ui', '-apple-system', 'sans-serif'],
+            sans: ['Archivo', '"GmarketSans"', 'system-ui', '-apple-system', 'sans-serif'],
           }
         }
       }
@@ -44,6 +44,36 @@
 
   <!-- Custom Core Style Override -->
   <style>
+    /* Korean flat/bold grotesk font (pairs with Archivo for Latin) */
+    @font-face {
+      font-family: 'GmarketSans';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/GmarketSansLight.woff') format('woff');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GmarketSans';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/GmarketSansMedium.woff') format('woff');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GmarketSans';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/GmarketSansBold.woff') format('woff');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'GmarketSans';
+      src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2107@1.1/GmarketSansBold.woff') format('woff');
+      font-weight: 800 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
     /* Custom thin scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
@@ -653,15 +683,10 @@
     };
 
     function renderHeader() {
-      const isLogged = auth.isAuthenticated();
-
       return `
         <header class="relative w-full border-b-2 border-black bg-black">
           <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 sm:px-8">
-            <a href="#/" onclick="handleLogoClick(event)" class="group flex items-center gap-2 select-none cursor-pointer">
-              <span class="text-lg sm:text-xl font-black tracking-tight text-white transition-colors group-hover:text-accent2">ㅋㅋ3</span>
-              ${isLogged ? '<span class="h-2 w-2 rounded-full bg-accent2 shadow-[0_0_8px_2px_rgba(255,122,48,0.7)]"></span>' : ''}
-            </a>
+            <a href="#/" class="select-none" aria-label="Home"></a>
           </div>
         </header>
       `;
@@ -749,13 +774,13 @@
 
       contentDiv.innerHTML = `
         <!-- Hero Section (Motion Reference) -->
-        <section id="hero-motion" class="relative w-full bg-black text-white overflow-hidden min-h-[100vh] sm:min-h-[92vh] flex flex-col justify-center px-6 sm:px-10">
+        <section id="hero-motion" class="relative w-full bg-black text-white overflow-hidden min-h-[100vh] sm:min-h-[92vh] flex flex-col justify-center">
           <div id="hero-cursor-dot" class="pointer-events-none fixed z-[999] rounded-full bg-accent2 opacity-0" style="width:18px;height:18px; left:0; top:0; transform:translate(-50%,-50%); transition: opacity 200ms ease-out, width 200ms ease-out, height 200ms ease-out, background-color 200ms ease-out, border-color 200ms ease-out;"></div>
 
-          <div class="relative z-10 space-y-1 sm:space-y-2 py-24 select-none">
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0" style="transition: transform 220ms ease-out;">CONTENTS</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="1.4" style="transition: transform 220ms ease-out;">CREATIVE</h1>
-            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="2.8" style="transition: transform 220ms ease-out;">3TEAM</h1>
+          <div class="relative z-10 mx-auto w-full max-w-7xl px-6 sm:px-8 space-y-1 sm:space-y-2 py-24 select-none">
+            <h1 onclick="handleLogoClick(event)" class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="0" style="transition: transform 220ms ease-out;">CONTENTS</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="2" style="transition: transform 220ms ease-out;">CREATIVE</h1>
+            <h1 class="hero-line text-[16vw] sm:text-[8.5vw] font-black uppercase leading-[0.92] tracking-tight text-white" data-depth="3.5" style="transition: transform 220ms ease-out;">3TEAM</h1>
           </div>
         </section>
 
@@ -845,7 +870,6 @@
         const rect = hero.getBoundingClientRect();
         const relX = e.clientX - rect.left;
         const delta = relX - rect.width / 2;
-        const paddingLeft = parseFloat(getComputedStyle(hero).paddingLeft) || 0;
 
         lines.forEach(function(line) {
           const depth = parseFloat(line.dataset.depth) || 0;
@@ -853,7 +877,8 @@
           // and clamp so the line never overflows past the right edge of the hero section.
           const rawOffset = Math.max(0, delta * depth);
           const naturalWidth = line.offsetWidth; // layout width is unaffected by the transform
-          const maxOffset = Math.max(0, rect.width - paddingLeft - naturalWidth - 16);
+          const naturalLeft = line.offsetLeft; // position within the (positioned) hero section, unaffected by transform
+          const maxOffset = Math.max(0, rect.width - naturalLeft - naturalWidth - 16);
           const offset = Math.min(rawOffset, maxOffset);
           line.style.transform = "translateX(" + offset + "px)";
         });
