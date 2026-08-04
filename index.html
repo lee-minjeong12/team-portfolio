@@ -92,7 +92,23 @@
     @media print {
       .no-print { display: none !important; }
       @page { size: landscape; margin: 0; }
-      body { background: #1a1f24 !important; }
+      html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #1a1f24 !important; }
+      .pdf-page {
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        box-sizing: border-box;
+        padding: 34px 56px !important;
+        margin: 0 !important;
+      }
+      .pdf-page .grid { width: 100%; }
+      .pdf-page h1 { font-size: 22px !important; }
+      .pdf-page p, .pdf-page span { font-size: 12px !important; }
+      .pdf-page .space-y-10 > * + * { margin-top: 20px !important; }
+      .pdf-page .space-y-4 > * + * { margin-top: 10px !important; }
     }
 
     /* Outlined display type (line-art style, echoes reference moodboard) */
@@ -1093,9 +1109,6 @@
                   <i data-lucide="user" class="h-4 w-4 text-neutral-400"></i> ${project.role || "디자인 & 제작"}
                 </p>
               </div>
-              <a href="#/works/${project.slug}/pdf" class="inline-flex items-center gap-1.5 rounded-full border-2 border-black px-4 py-2 text-xs font-bold tracking-widest text-black hover:bg-accent2 hover:text-white hover:border-accent2 transition-colors">
-                <i data-lucide="file-down" class="h-3.5 w-3.5"></i> PDF 템플릿 보기
-              </a>
             </div>
 
             <!-- Description -->
@@ -1142,6 +1155,13 @@
             </div>
           </section>
         ` : ''}
+
+        <!-- PDF Export Button -->
+        <section class="w-full py-16 flex justify-center border-t-2 border-black">
+          <a href="#/works/${project.slug}/pdf" class="inline-flex items-center gap-2 rounded-full border-2 border-black bg-white px-6 py-3 text-xs font-bold tracking-widest text-black hover:bg-accent2 hover:text-white hover:border-accent2 transition-colors">
+            <i data-lucide="download" class="h-4 w-4"></i> PDF
+          </a>
+        </section>
 
         <!-- Related Block -->
         ${relatedHtml}
