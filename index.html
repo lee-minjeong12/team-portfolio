@@ -13,7 +13,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,7 +35,7 @@
             border: '#111111'
           },
           fontFamily: {
-            sans: ['Archivo', '"GmarketSans"', 'system-ui', '-apple-system', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', '"GmarketSans"', 'system-ui', '-apple-system', 'sans-serif'],
           }
         }
       }
@@ -1079,12 +1079,14 @@
 
       if (!project) {
         contentDiv.innerHTML = `
-          <div class="mx-auto max-w-xl py-32 text-center space-y-6">
-            <h2 class="text-2xl font-black">프로젝트를 찾을 수 없습니다</h2>
-            <p class="text-sm text-neutral-500">삭제되었거나 주소가 변경된 비공개 프로젝트일 수 있습니다.</p>
-            <a href="#/works" class="inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-xs font-bold tracking-widest text-white">
-              <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i> BACK TO WORKS
-            </a>
+          <div class="w-full bg-black min-h-[60vh] flex flex-col items-center justify-center">
+            <div class="mx-auto max-w-xl text-center space-y-6">
+              <h2 class="text-2xl font-black text-white">프로젝트를 찾을 수 없습니다</h2>
+              <p class="text-sm text-neutral-400">삭제되었거나 주소가 변경된 비공개 프로젝트일 수 있습니다.</p>
+              <a href="#/works" class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-xs font-bold tracking-widest text-black">
+                <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i> BACK TO WORKS
+              </a>
+            </div>
           </div>
         `;
         return;
@@ -1118,18 +1120,20 @@
       let relatedHtml = "";
       if (related.length > 0) {
         relatedHtml = `
-          <section class="border-t border-neutral-100 py-24 max-w-7xl mx-auto px-6 sm:px-8">
-            <div class="flex items-end justify-between mb-12">
-              <div class="space-y-3">
-                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">EXPLORE MORE</span>
-                <h2 class="text-2xl font-extrabold tracking-tight">관련 프로젝트</h2>
+          <section class="w-full border-t-2 border-white/10 bg-black">
+            <div class="py-24 max-w-7xl mx-auto px-6 sm:px-8">
+              <div class="flex items-end justify-between mb-12">
+                <div class="space-y-3">
+                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">EXPLORE MORE</span>
+                  <h2 class="text-2xl font-extrabold tracking-tight text-white">관련 프로젝트</h2>
+                </div>
+                <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-white hover:text-accent2 transition-colors">
+                  ALL WORKS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
+                </a>
               </div>
-              <a href="#/works" class="group inline-flex items-center gap-1.5 text-xs font-bold tracking-widest text-black hover:text-accent transition-colors">
-                ALL WORKS <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
-              </a>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
-              ${related.map(p => renderPortfolioCard(p)).join("")}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+                ${related.map(p => renderPortfolioCard(p, true)).join("")}
+              </div>
             </div>
           </section>
         `;
@@ -1151,24 +1155,25 @@
         </section>
 
         <!-- Details Info -->
-        <section class="max-w-7xl mx-auto px-6 py-16 sm:px-8 sm:py-24">
+        <section class="w-full bg-black">
+          <div class="max-w-7xl mx-auto px-6 py-16 sm:px-8 sm:py-24">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16">
             <!-- Sidebar info -->
-            <div class="lg:col-span-4 space-y-8 border-l border-neutral-200 pl-6 lg:order-2">
+            <div class="lg:col-span-4 space-y-8 border-l border-white/15 pl-6 lg:order-2">
               <div>
-                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">CLIENT</span>
-                <p class="text-base font-bold">${project.client_name}</p>
+                <span class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase block mb-2">CLIENT</span>
+                <p class="text-base font-bold text-white">${project.client_name}</p>
               </div>
               <div>
-                <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">YEAR</span>
-                <p class="text-base font-bold flex items-center gap-2">
-                  <i data-lucide="calendar" class="h-4 w-4 text-neutral-400"></i> ${project.year}
+                <span class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase block mb-2">YEAR</span>
+                <p class="text-base font-bold text-white flex items-center gap-2">
+                  <i data-lucide="calendar" class="h-4 w-4 text-neutral-500"></i> ${project.year}
                 </p>
               </div>
               ${project.awards ? `
                 <div>
-                  <span class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase block mb-2">AWARDS</span>
-                  <p class="text-base font-bold flex items-center gap-2">
+                  <span class="text-[10px] font-bold tracking-widest text-neutral-500 uppercase block mb-2">AWARDS</span>
+                  <p class="text-base font-bold text-white flex items-center gap-2">
                     <i data-lucide="award" class="h-4 w-4 text-accent2"></i> ${project.awards}
                   </p>
                 </div>
@@ -1180,10 +1185,10 @@
               ${project.solution && project.solution.length > 0 ? `
                 <div class="space-y-4">
                   <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SOLUTION</span>
-                  <h2 class="text-2xl font-bold tracking-tight">문제 해결 방식</h2>
+                  <h2 class="text-2xl font-bold tracking-tight text-white">문제 해결 방식</h2>
                   <div class="space-y-3 pt-2">
                     ${project.solution.map((item, i) => `
-                      <p class="text-base text-neutral-700 leading-relaxed flex gap-3">
+                      <p class="text-base text-neutral-300 leading-relaxed flex gap-3">
                         <span class="text-accent2 font-bold shrink-0">${i + 1}.</span>
                         <span>${item}</span>
                       </p>
@@ -1195,10 +1200,10 @@
               ${project.scope_of_work && project.scope_of_work.length > 0 ? `
                 <div class="space-y-4">
                   <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SCOPE OF WORK</span>
-                  <h2 class="text-2xl font-bold tracking-tight">작업 범위</h2>
+                  <h2 class="text-2xl font-bold tracking-tight text-white">작업 범위</h2>
                   <div class="flex flex-wrap gap-2.5 pt-2">
                     ${project.scope_of_work.map(tag => `
-                      <span class="inline-block rounded-full border-2 border-black bg-accent2 px-4 py-2 text-xs font-bold tracking-wide text-white">${tag}</span>
+                      <span class="inline-block rounded-full border-2 border-white/80 bg-accent2 px-4 py-2 text-xs font-bold tracking-wide text-white">${tag}</span>
                     `).join("")}
                   </div>
                 </div>
@@ -1207,20 +1212,21 @@
               ${project.impact ? `
                 <div class="space-y-4">
                   <span class="text-[10px] font-bold tracking-widest text-accent uppercase">IMPACT</span>
-                  <h2 class="text-2xl font-bold tracking-tight">결과 및 임팩트</h2>
+                  <h2 class="text-2xl font-bold tracking-tight text-white">결과 및 임팩트</h2>
                   <div class="flex items-start gap-3 pt-2">
                     <i data-lucide="arrow-right" class="h-5 w-5 text-accent2 shrink-0 mt-1"></i>
-                    <p class="text-base text-neutral-700 leading-relaxed">${project.impact}</p>
+                    <p class="text-base text-neutral-300 leading-relaxed">${project.impact}</p>
                   </div>
                 </div>
               ` : ''}
             </div>
           </div>
+          </div>
         </section>
 
         <!-- Video Player -->
         ${embedUrl ? `
-          <section class="w-full bg-[#111111] py-16 sm:py-24">
+          <section class="w-full bg-black py-16 sm:py-24">
             <div class="max-w-5xl mx-auto px-6">
               <div class="space-y-2 mb-8 text-center">
                 <span class="text-[10px] font-bold tracking-widest text-accent uppercase">VIDEO IN ACTION</span>
@@ -1235,15 +1241,11 @@
 
         <!-- Image Gallery Showcase -->
         ${project.media_urls && project.media_urls.length > 0 ? `
-          <section class="w-full border-t-2 border-black py-24 bg-white">
+          <section class="w-full border-t-2 border-white/10 py-24 bg-black">
             <div class="max-w-7xl mx-auto px-6 sm:px-8">
-              <div class="space-y-3 mb-12">
-                <span class="text-[10px] font-bold tracking-widest text-accent uppercase">PROJECT MEDIA</span>
-                <h2 class="text-2xl font-bold tracking-tight">미디어 갤러리</h2>
-              </div>
               <div class="flex flex-col gap-8 sm:gap-12">
                 ${project.media_urls.map(url => `
-                  <div class="w-full bg-white border border-neutral-200 overflow-hidden">
+                  <div class="w-full bg-black overflow-hidden">
                     <img src="${url}" alt="" class="w-full h-auto object-contain" />
                   </div>
                 `).join("")}
@@ -1253,8 +1255,8 @@
         ` : ''}
 
         <!-- PDF Export Button -->
-        <section class="w-full py-16 flex justify-center border-t-2 border-black">
-          <a href="#/works/${project.slug}/pdf" class="inline-flex items-center gap-2 rounded-full border-2 border-black bg-white px-6 py-3 text-xs font-bold tracking-widest text-black hover:bg-accent2 hover:text-white hover:border-accent2 transition-colors">
+        <section class="w-full py-16 flex justify-center border-t-2 border-white/10 bg-black">
+          <a href="#/works/${project.slug}/pdf" class="inline-flex items-center gap-2 rounded-full border-2 border-white bg-black px-6 py-3 text-xs font-bold tracking-widest text-white hover:bg-accent2 hover:text-white hover:border-accent2 transition-colors">
             <i data-lucide="download" class="h-4 w-4"></i> PDF
           </a>
         </section>
