@@ -84,6 +84,17 @@
       border-color: #fca5a5;
     }
     
+    /* PDF One-Pager print styles */
+    .pdf-page, .pdf-page * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      @page { size: landscape; margin: 0; }
+      body { background: #1a1f24 !important; }
+    }
+
     /* Outlined display type (line-art style, echoes reference moodboard) */
     .outline-mint {
       color: transparent;
@@ -156,6 +167,13 @@
         year: 2025,
         role: "Brand Identity Design & Guidelines",
         description: "현대 모빌리티의 미래 지향적인 가치를 담기 위해 미니멀하면서도 하이테크적인 타이포그래피와 유기적인 그리드 시스템을 기반으로 리브랜딩을 진행하였습니다. 새로운 로고마크와 아이코닉한 네이비-네온 블루 컬러 에셋을 개발하여 오프라인 스테이셔너리부터 디지털 인터페이스까지 일관된 유저 경험을 설계했습니다.",
+        solution: [
+          "브랜드 미래 비전에 맞춘 미니멀·하이테크 타이포그래피 및 그리드 시스템 재설계",
+          "네이비-네온 블루 컬러 에셋 및 신규 로고마크 개발",
+          "오프라인 스테이셔너리부터 디지털 인터페이스까지 일관된 가이드라인 구축"
+        ],
+        scope_of_work: ["브랜드 아이덴티티", "로고 디자인", "가이드라인 제작", "스테이셔너리 디자인"],
+        impact: "리브랜딩 이후 사내외 브랜드 인지도 조사에서 '신뢰감 있는 하이테크 이미지' 응답률이 상승, 후속 캠페인 및 전시 부스 디자인 과업으로 연계",
         thumbnail_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200",
         media_urls: [
           "https://images.unsplash.com/photo-1626785774573-4b799315345d?q=80&w=1200",
@@ -178,6 +196,13 @@
         year: 2026,
         role: "Video Editing & Color Grading",
         description: "가상 의류 피팅 플랫폼 AURA의 2026 런칭 브랜드 필름입니다. 3D 의상 시뮬레이션 소스와 실제 모델 촬영본을 정교하게 매치 컷하여 가상과 현실이 연결되는 연출을 극대화했습니다. 강렬한 비트의 사운드트랙에 맞춘 속도감 있는 트랜지션과 모던한 색보정(Cyberpunk Teal & Amber)으로 역동적인 무드를 완성했습니다.",
+        solution: [
+          "3D 의상 시뮬레이션 소스와 실사 촬영본의 정교한 매치 컷 편집",
+          "사운드트랙 비트에 맞춘 속도감 있는 트랜지션 설계",
+          "Cyberpunk Teal & Amber 톤의 모던 색보정 적용"
+        ],
+        scope_of_work: ["영상 편집", "컬러 그레이딩", "모션그래픽", "사운드 싱크"],
+        impact: "런칭 필름 공개 후 브랜드 유튜브 채널 조회수 목표치 대비 180% 초과 달성, 후속 시즌 캠페인 필름 제작으로 계약 연장",
         thumbnail_url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=1200",
         media_urls: [
           "https://images.unsplash.com/photo-1536240478700-b869070f9279?q=80&w=1200",
@@ -199,6 +224,13 @@
         year: 2025,
         role: "Package & Editorial Design",
         description: "지속 가능한 환경을 지향하는 뷰티 & 홈 데코 브랜드 Greenery Lab의 친환경 패키지 디자인 프로젝트입니다. 재활용 펄프지와 콩기름 인쇄를 기준으로 하여 자연 그대로의 거칠고 포근한 질감을 살렸으며, 타이포그래피 위주의 심플한 라벨 디자인으로 불필요한 가공을 줄였습니다.",
+        solution: [
+          "재활용 펄프지 및 콩기름 인쇄 기반 친환경 패키지 소재 선정",
+          "타이포그래피 중심의 심플 라벨 디자인으로 후가공 최소화",
+          "제품 라인별 컬러 코드 시스템으로 시각적 통일감 구축"
+        ],
+        scope_of_work: ["패키지 디자인", "에디토리얼 디자인", "인쇄 감리"],
+        impact: "친환경 패키지 리뉴얼 이후 리테일 매장 입점 문의 증가, 브랜드 지속가능성 리포트 화보 촬영 과업으로 연계",
         thumbnail_url: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200",
         media_urls: [
           "https://images.unsplash.com/photo-1605263133935-96f33c89b495?q=80&w=1200",
@@ -220,6 +252,13 @@
         year: 2026,
         role: "Art Direction & Social Content Creation",
         description: "MZ세대를 타겟으로 한 식재료 큐레이션 서비스 FRESCO의 SNS 비주얼 가이드를 수립했습니다. 볼드한 네온 컬러 매치와 유머러스한 일러스트 팝업을 활용하여 스크롤을 멈추게 하는 크리에이티브를 개발했습니다. 한 달간의 캠페인 결과, 브랜드 오피셜 인스타그램 계정의 도달율이 전월 대비 140% 향상되었습니다.",
+        solution: [
+          "MZ세대 타겟에 맞춘 볼드 네온 컬러 매치 비주얼 가이드 수립",
+          "유머러스한 일러스트 팝업 요소로 스크롤 스토핑 크리에이티브 개발",
+          "주 3회 발행 콘텐츠 캘린더 및 릴스 포맷 최적화"
+        ],
+        scope_of_work: ["아트 디렉션", "SNS 콘텐츠 제작", "일러스트레이션", "콘텐츠 기획"],
+        impact: "캠페인 1개월간 인스타그램 도달율 전월 대비 140% 향상, 신규 팔로워 유입 증가로 장기 콘텐츠 파트너십 계약 체결",
         thumbnail_url: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1200",
         media_urls: [
           "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1200",
@@ -469,7 +508,15 @@
     // ==========================================
     function getRoute() {
       const hash = window.location.hash || "#/";
-      
+
+      // Dynamic route matching: #/works/:slug/pdf
+      if (hash.startsWith("#/works/") && hash.endsWith("/pdf")) {
+        const slug = hash.replace("#/works/", "").replace("/pdf", "");
+        if (slug) {
+          return { name: "project-pdf", params: { slug } };
+        }
+      }
+
       // Dynamic route matching: #/works/:slug
       if (hash.startsWith("#/works/")) {
         const slug = hash.replace("#/works/", "");
@@ -510,6 +557,13 @@
       const render = () => {
         const isAdmin = route.name.startsWith("admin-");
         let html = "";
+
+        if (route.name === "project-pdf") {
+          // Standalone full-bleed layout for PDF export template (no site chrome)
+          appDiv.innerHTML = `<div id="pdf-view-content"></div>`;
+          renderProjectPdfView(route.params.slug);
+          return;
+        }
 
         if (isAdmin) {
           // Layout: Admin CMS Layout with Sidebar
@@ -1039,6 +1093,9 @@
                   <i data-lucide="user" class="h-4 w-4 text-neutral-400"></i> ${project.role || "디자인 & 제작"}
                 </p>
               </div>
+              <a href="#/works/${project.slug}/pdf" class="inline-flex items-center gap-1.5 rounded-full border-2 border-black px-4 py-2 text-xs font-bold tracking-widest text-black hover:bg-accent2 hover:text-white hover:border-accent2 transition-colors">
+                <i data-lucide="file-down" class="h-3.5 w-3.5"></i> PDF 템플릿 보기
+              </a>
             </div>
 
             <!-- Description -->
@@ -1088,6 +1145,99 @@
 
         <!-- Related Block -->
         ${relatedHtml}
+      `;
+    }
+
+    // Project PDF / One-Pager Template View
+    function renderProjectPdfView(slug) {
+      const project = db.getProjectBySlug(slug) || db.getProjects(true).find(p => p.slug === slug);
+      const container = document.getElementById("pdf-view-content");
+
+      if (!project) {
+        container.innerHTML = `
+          <div class="min-h-screen flex items-center justify-center bg-[#1a1f24] text-white">
+            <div class="text-center space-y-4">
+              <p class="text-sm text-neutral-400">프로젝트를 찾을 수 없습니다.</p>
+              <a href="#/works" class="text-xs font-bold text-accent">WORKS로 돌아가기</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const solution = project.solution || [];
+      const scopeOfWork = project.scope_of_work || [];
+      const impact = project.impact || "";
+      const images = [project.thumbnail_url, ...(project.media_urls || [])].filter(Boolean).slice(0, 4);
+
+      container.innerHTML = `
+        <div class="min-h-screen bg-[#1a1f24] text-white">
+          <!-- Toolbar (hidden on print) -->
+          <div class="no-print sticky top-0 z-20 flex items-center justify-between bg-[#111417] border-b border-neutral-800 px-6 py-3">
+            <a href="#/works/${project.slug}" class="inline-flex items-center gap-1.5 text-xs font-bold text-neutral-300 hover:text-white transition-colors">
+              <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i> 프로젝트로 돌아가기
+            </a>
+            <button onclick="window.print()" class="inline-flex items-center gap-1.5 rounded-full bg-accent2 hover:bg-accent2-hover px-4 py-2 text-xs font-bold text-white transition-colors">
+              <i data-lucide="printer" class="h-3.5 w-3.5"></i> PDF로 저장 / 인쇄
+            </button>
+          </div>
+
+          <!-- PDF Page -->
+          <div class="pdf-page mx-auto max-w-[1280px] px-10 py-14 sm:px-16 sm:py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+              <!-- Left: Text content -->
+              <div class="lg:col-span-6 space-y-10">
+                <div class="space-y-3">
+                  <span class="italic text-sm text-neutral-400">project</span>
+                  <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-snug">
+                    <span class="text-accent2">${project.client_name}</span> ${project.title}${project.year ? ` (${project.year}-)` : ''}
+                  </h1>
+                </div>
+
+                <div class="space-y-4">
+                  <span class="italic text-sm text-neutral-400">solution</span>
+                  <div class="bg-white/5 border border-white/10 rounded-xl p-6 space-y-3">
+                    ${solution.length > 0 ? solution.map((item, i) => `
+                      <p class="text-sm sm:text-base leading-relaxed flex gap-3">
+                        <span class="text-accent2 font-bold shrink-0">${i + 1}.</span>
+                        <span>${item}</span>
+                      </p>
+                    `).join("") : `<p class="text-sm text-neutral-500">등록된 솔루션 항목이 없습니다.</p>`}
+                  </div>
+                </div>
+
+                <div class="space-y-4">
+                  <span class="italic text-sm text-neutral-400">scope of work</span>
+                  <div class="flex flex-wrap gap-3">
+                    ${scopeOfWork.length > 0 ? scopeOfWork.map(tag => `
+                      <span class="inline-block rounded-lg bg-accent2 px-4 py-2 text-xs sm:text-sm font-bold text-white">${tag}</span>
+                    `).join("") : `<span class="text-sm text-neutral-500">등록된 작업 범위가 없습니다.</span>`}
+                  </div>
+                </div>
+
+                <div class="space-y-4">
+                  <span class="italic text-sm text-neutral-400">impact</span>
+                  <div class="flex items-start gap-3">
+                    <i data-lucide="arrow-right" class="h-5 w-5 text-accent2 shrink-0 mt-1"></i>
+                    <p class="text-sm sm:text-base leading-relaxed text-neutral-200">${impact || "등록된 임팩트 내용이 없습니다."}</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Image collage -->
+              <div class="lg:col-span-6">
+                <div class="grid grid-cols-2 gap-4 h-full">
+                  ${images.map(url => `
+                    <div class="aspect-[4/3] rounded-lg overflow-hidden bg-neutral-800">
+                      <img src="${url}" alt="" class="w-full h-full object-cover" />
+                    </div>
+                  `).join("")}
+                  ${images.length === 0 ? `<div class="col-span-2 aspect-video rounded-lg bg-neutral-800 flex items-center justify-center text-xs text-neutral-500">등록된 이미지가 없습니다</div>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       `;
     }
 
@@ -1661,6 +1811,25 @@
                     <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">상세 프로젝트 설명</label>
                     <textarea id="f-desc" rows="6" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
                   </div>
+
+                  <!-- PDF Template Fields -->
+                  <div class="bg-neutral-950 p-4 border border-neutral-850 rounded-xl space-y-4">
+                    <h3 class="text-xs font-bold text-white tracking-wide border-b border-neutral-800 pb-2 flex items-center gap-1.5">
+                      <i data-lucide="file-text" class="h-4 w-4 text-accent"></i> PDF 템플릿 항목 (solution / scope of work / impact)
+                    </h3>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">Solution (한 줄에 한 항목씩 입력)</label>
+                      <textarea id="f-solution" rows="4" placeholder="예: 오프라인 체험 행사 현장 스케치 제작&#10;소음/집중 방해 없도록 촬영 동선 최적화" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
+                    </div>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">Scope of Work (한 줄에 한 항목씩 입력)</label>
+                      <textarea id="f-scope" rows="3" placeholder="예: 마케팅 커뮤니케이션&#10;온드미디어 영상" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
+                    </div>
+                    <div class="space-y-1.5">
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">Impact</label>
+                      <textarea id="f-impact" rows="3" placeholder="예: 후속 콜라보 프로젝트로 연계" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Right panel (Switches, Uploads) -->
@@ -1848,6 +2017,9 @@
           document.getElementById("f-year").value = proj.year;
           document.getElementById("f-role").value = proj.role || "";
           document.getElementById("f-desc").value = proj.description || "";
+          document.getElementById("f-solution").value = (proj.solution || []).join("\n");
+          document.getElementById("f-scope").value = (proj.scope_of_work || []).join("\n");
+          document.getElementById("f-impact").value = proj.impact || "";
           
           document.getElementById("f-published").checked = proj.is_published;
           document.getElementById("f-featured").checked = proj.is_featured;
@@ -2194,6 +2366,9 @@
         year: Number(document.getElementById("f-year").value),
         role: document.getElementById("f-role").value,
         description: document.getElementById("f-desc").value,
+        solution: document.getElementById("f-solution").value.split("\n").map(s => s.trim()).filter(Boolean),
+        scope_of_work: document.getElementById("f-scope").value.split("\n").map(s => s.trim()).filter(Boolean),
+        impact: document.getElementById("f-impact").value.trim(),
         is_published: document.getElementById("f-published").checked,
         is_featured: document.getElementById("f-featured").checked,
         sort_order: Number(document.getElementById("f-order").value),
