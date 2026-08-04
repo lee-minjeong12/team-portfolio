@@ -188,7 +188,7 @@
           "네이비-네온 블루 컬러 에셋 및 신규 로고마크 개발",
           "오프라인 스테이셔너리부터 디지털 인터페이스까지 일관된 가이드라인 구축"
         ],
-        scope_of_work: ["브랜드 아이덴티티", "로고 디자인", "가이드라인 제작", "스테이셔너리 디자인"],
+        scope_of_work: ["콘텐츠 디자인", "굿즈 디자인", "오프라인 디자인"],
         impact: "리브랜딩 이후 사내외 브랜드 인지도 조사에서 '신뢰감 있는 하이테크 이미지' 응답률이 상승, 후속 캠페인 및 전시 부스 디자인 과업으로 연계",
         thumbnail_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200",
         media_urls: [
@@ -217,7 +217,7 @@
           "사운드트랙 비트에 맞춘 속도감 있는 트랜지션 설계",
           "Cyberpunk Teal & Amber 톤의 모던 색보정 적용"
         ],
-        scope_of_work: ["영상 편집", "컬러 그레이딩", "모션그래픽", "사운드 싱크"],
+        scope_of_work: ["콘텐츠 기획", "콘텐츠 촬영"],
         impact: "런칭 필름 공개 후 브랜드 유튜브 채널 조회수 목표치 대비 180% 초과 달성, 후속 시즌 캠페인 필름 제작으로 계약 연장",
         thumbnail_url: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=1200",
         media_urls: [
@@ -245,7 +245,7 @@
           "타이포그래피 중심의 심플 라벨 디자인으로 후가공 최소화",
           "제품 라인별 컬러 코드 시스템으로 시각적 통일감 구축"
         ],
-        scope_of_work: ["패키지 디자인", "에디토리얼 디자인", "인쇄 감리"],
+        scope_of_work: ["콘텐츠 디자인", "오프라인 디자인"],
         impact: "친환경 패키지 리뉴얼 이후 리테일 매장 입점 문의 증가, 브랜드 지속가능성 리포트 화보 촬영 과업으로 연계",
         thumbnail_url: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=1200",
         media_urls: [
@@ -273,7 +273,7 @@
           "유머러스한 일러스트 팝업 요소로 스크롤 스토핑 크리에이티브 개발",
           "주 3회 발행 콘텐츠 캘린더 및 릴스 포맷 최적화"
         ],
-        scope_of_work: ["아트 디렉션", "SNS 콘텐츠 제작", "일러스트레이션", "콘텐츠 기획"],
+        scope_of_work: ["SNS 운영", "콘텐츠 기획", "콘텐츠 디자인"],
         impact: "캠페인 1개월간 인스타그램 도달율 전월 대비 140% 향상, 신규 팔로워 유입 증가로 장기 콘텐츠 파트너십 계약 체결",
         thumbnail_url: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1200",
         media_urls: [
@@ -1112,12 +1112,50 @@
             </div>
 
             <!-- Description -->
-            <div class="lg:col-span-8 space-y-8 lg:order-1">
+            <div class="lg:col-span-8 space-y-12 lg:order-1">
               <div class="space-y-4">
                 <span class="text-[10px] font-bold tracking-widest text-accent uppercase">PROJECT OVERVIEW</span>
                 <h2 class="text-2xl font-bold tracking-tight">프로젝트 소개</h2>
+                <p class="text-base sm:text-lg text-neutral-600 font-light leading-relaxed whitespace-pre-line">${project.description}</p>
               </div>
-              <p class="text-base sm:text-lg text-neutral-600 font-light leading-relaxed whitespace-pre-line">${project.description}</p>
+
+              ${project.solution && project.solution.length > 0 ? `
+                <div class="space-y-4">
+                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SOLUTION</span>
+                  <h2 class="text-2xl font-bold tracking-tight">문제 해결 방식</h2>
+                  <div class="space-y-3 pt-2">
+                    ${project.solution.map((item, i) => `
+                      <p class="text-base text-neutral-700 leading-relaxed flex gap-3">
+                        <span class="text-accent2 font-bold shrink-0">${i + 1}.</span>
+                        <span>${item}</span>
+                      </p>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ''}
+
+              ${project.scope_of_work && project.scope_of_work.length > 0 ? `
+                <div class="space-y-4">
+                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SCOPE OF WORK</span>
+                  <h2 class="text-2xl font-bold tracking-tight">작업 범위</h2>
+                  <div class="flex flex-wrap gap-2.5 pt-2">
+                    ${project.scope_of_work.map(tag => `
+                      <span class="inline-block rounded-full border-2 border-black bg-accent2 px-4 py-2 text-xs font-bold tracking-wide text-white">${tag}</span>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ''}
+
+              ${project.impact ? `
+                <div class="space-y-4">
+                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">IMPACT</span>
+                  <h2 class="text-2xl font-bold tracking-tight">결과 및 임팩트</h2>
+                  <div class="flex items-start gap-3 pt-2">
+                    <i data-lucide="arrow-right" class="h-5 w-5 text-accent2 shrink-0 mt-1"></i>
+                    <p class="text-base text-neutral-700 leading-relaxed">${project.impact}</p>
+                  </div>
+                </div>
+              ` : ''}
             </div>
           </div>
         </section>
@@ -1842,8 +1880,8 @@
                       <textarea id="f-solution" rows="4" placeholder="예: 오프라인 체험 행사 현장 스케치 제작&#10;소음/집중 방해 없도록 촬영 동선 최적화" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
                     </div>
                     <div class="space-y-1.5">
-                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">Scope of Work (한 줄에 한 항목씩 입력)</label>
-                      <textarea id="f-scope" rows="3" placeholder="예: 마케팅 커뮤니케이션&#10;온드미디어 영상" class="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-xs text-white focus:outline-none resize-none leading-relaxed"></textarea>
+                      <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">Scope of Work (해당 항목 선택)</label>
+                      <div id="f-scope-buttons" class="flex flex-wrap gap-2 pt-1"></div>
                     </div>
                     <div class="space-y-1.5">
                       <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">Impact</label>
@@ -2016,6 +2054,29 @@
     };
 
     // Modal Control Logic
+    const SCOPE_OF_WORK_OPTIONS = ["SNS 운영", "콘텐츠 기획", "콘텐츠 디자인", "콘텐츠 촬영", "굿즈 디자인", "오프라인 디자인"];
+    let currentScopeTags = [];
+    function renderScopeButtons() {
+      const box = document.getElementById("f-scope-buttons");
+      if (!box) return;
+      box.innerHTML = SCOPE_OF_WORK_OPTIONS.map(opt => {
+        const active = currentScopeTags.includes(opt);
+        return `
+          <button type="button" onclick="toggleScopeTag('${opt}')" class="rounded-full border px-3.5 py-1.5 text-[10px] font-bold tracking-wide transition-colors ${active ? 'bg-accent2 border-accent2 text-white' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:border-accent2 hover:text-white'}">
+            ${opt}
+          </button>
+        `;
+      }).join("");
+    }
+    window.toggleScopeTag = function(opt) {
+      if (currentScopeTags.includes(opt)) {
+        currentScopeTags = currentScopeTags.filter(t => t !== opt);
+      } else {
+        currentScopeTags.push(opt);
+      }
+      renderScopeButtons();
+    };
+
     let currentGalleryUrls = [];
     window.openProjectModal = function(id) {
       currentEditProjectId = id;
@@ -2038,8 +2099,9 @@
           document.getElementById("f-role").value = proj.role || "";
           document.getElementById("f-desc").value = proj.description || "";
           document.getElementById("f-solution").value = (proj.solution || []).join("\n");
-          document.getElementById("f-scope").value = (proj.scope_of_work || []).join("\n");
           document.getElementById("f-impact").value = proj.impact || "";
+          currentScopeTags = [...(proj.scope_of_work || [])];
+          renderScopeButtons();
           
           document.getElementById("f-published").checked = proj.is_published;
           document.getElementById("f-featured").checked = proj.is_featured;
@@ -2067,6 +2129,8 @@
         document.getElementById("f-order").value = "0";
         document.getElementById("thumb-preview-box").classList.add("hidden");
         currentGalleryUrls = [];
+        currentScopeTags = [];
+        renderScopeButtons();
         renderModalGalleryList();
       }
 
@@ -2387,7 +2451,7 @@
         role: document.getElementById("f-role").value,
         description: document.getElementById("f-desc").value,
         solution: document.getElementById("f-solution").value.split("\n").map(s => s.trim()).filter(Boolean),
-        scope_of_work: document.getElementById("f-scope").value.split("\n").map(s => s.trim()).filter(Boolean),
+        scope_of_work: [...currentScopeTags],
         impact: document.getElementById("f-impact").value.trim(),
         is_published: document.getElementById("f-published").checked,
         is_featured: document.getElementById("f-featured").checked,
