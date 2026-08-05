@@ -893,14 +893,23 @@
         });
       }
 
-      function tick() {
+      let lastTimestamp = null;
+
+      function tick(timestamp) {
+        if (lastTimestamp === null) lastTimestamp = timestamp;
+        const dt = Math.min(48, timestamp - lastTimestamp); // cap to avoid jumps (e.g. after tab switch)
+        lastTimestamp = timestamp;
+        // Time-based exponential smoothing so the glide feels identically smooth
+        // regardless of the display's refresh rate.
+        const smoothing = 1 - Math.exp(-dt / 140);
+
         const targets = computeTargets();
         let stillMoving = false;
 
         lines.forEach(function(line, i) {
           const diff = targets[i] - currentOffsets[i];
-          if (Math.abs(diff) > 0.3) stillMoving = true;
-          currentOffsets[i] += diff * 0.14; // ease factor: higher = snappier, lower = silkier
+          if (Math.abs(diff) > 0.25) stillMoving = true;
+          currentOffsets[i] += diff * smoothing;
           line.style.transform = "translateX(" + currentOffsets[i] + "px)";
         });
 
@@ -908,6 +917,7 @@
           rafId = requestAnimationFrame(tick);
         } else {
           rafId = null;
+          lastTimestamp = null;
         }
       }
 
