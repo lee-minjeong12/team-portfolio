@@ -568,7 +568,6 @@
         "#/about": "about",
         "#/contact": "contact",
         "#/admin/login": "admin-login",
-        "#/admin/dashboard": "admin-dashboard",
         "#/admin/projects": "admin-projects",
         "#/admin/categories": "admin-categories",
         "#/admin/settings": "admin-settings"
@@ -639,7 +638,6 @@
           appDiv.innerHTML = html;
           
           // Render Sub-Views
-          if (route.name === "admin-dashboard") renderAdminDashboardView();
           if (route.name === "admin-projects") renderAdminProjectsView();
           if (route.name === "admin-categories") renderAdminCategoriesView();
           if (route.name === "admin-settings") renderAdminSettingsView();
@@ -1592,7 +1590,6 @@
     // Admin Sidebar Layout component
     function renderAdminSidebar() {
       const pathname = window.location.hash;
-      const isDashboard = pathname === "#/admin/dashboard";
       const isProjects = pathname.startsWith("#/admin/projects");
       const isCategories = pathname === "#/admin/categories";
       const isSettings = pathname === "#/admin/settings";
@@ -1611,9 +1608,6 @@
             </div>
 
             <nav class="space-y-1">
-              <a href="#/admin/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isDashboard ? 'bg-accent text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}">
-                <i data-lucide="layout-dashboard" class="h-4 w-4"></i> 대시보드
-              </a>
               <a href="#/admin/projects" class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isProjects ? 'bg-accent text-white' : 'text-neutral-400 hover:bg-neutral-800 hover:text-white'}">
                 <i data-lucide="folder-kanban" class="h-4 w-4"></i> 프로젝트 관리
               </a>
@@ -1699,144 +1693,6 @@
       } else {
         alertDiv.innerText = res.error;
         alertDiv.classList.remove("hidden");
-      }
-    };
-
-    // Admin Dashboard View
-    function renderAdminDashboardView() {
-      const container = document.getElementById("admin-view-content");
-      const projects = db.getProjects(true);
-      const categories = db.getCategories();
-      const settings = db.getSettings();
-      const inquiries = db.getInquiries().sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-      const totalProj = projects.length;
-      const publishedProj = projects.filter(p => p.is_published).length;
-
-      container.innerHTML = `
-        <div class="space-y-10 animate-fade-in">
-          <!-- Header -->
-          <div class="border-b border-neutral-800 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <span class="text-[10px] font-bold tracking-widest text-accent uppercase">OVERVIEW</span>
-              <h1 class="text-2xl font-black text-white tracking-tight">대시보드</h1>
-            </div>
-            <div class="text-xs text-neutral-400 font-light bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2">
-              최근 사이트 업데이트: ${new Date(settings.updated_at).toLocaleDateString()}
-            </div>
-          </div>
-
-          <!-- Quick Stats Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl flex flex-col justify-between space-y-4 shadow-lg hover:border-neutral-700 transition-colors">
-              <div class="flex justify-between items-start">
-                <div>
-                  <span class="text-xs text-neutral-400 font-bold tracking-tight block mb-1">전체 프로젝트</span>
-                  <span class="text-3xl font-black text-white">${totalProj}</span>
-                </div>
-                <div class="p-3 bg-neutral-950 border border-neutral-800 rounded-lg"><i data-lucide="folder-kanban" class="h-5 w-5 text-blue-400"></i></div>
-              </div>
-              <div class="flex justify-between items-center border-t border-neutral-800/80 pt-4 text-xs">
-                <span class="text-neutral-500">공개: ${publishedProj}개 / 비공개: ${totalProj - publishedProj}개</span>
-                <a href="#/admin/projects" class="text-accent hover:text-blue-300 font-bold flex items-center gap-0.5">바로가기 <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
-              </div>
-            </div>
-            <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl flex flex-col justify-between space-y-4 shadow-lg hover:border-neutral-700 transition-colors">
-              <div class="flex justify-between items-start">
-                <div>
-                  <span class="text-xs text-neutral-400 font-bold tracking-tight block mb-1">등록된 카테고리</span>
-                  <span class="text-3xl font-black text-white">${categories.length}</span>
-                </div>
-                <div class="p-3 bg-neutral-950 border border-neutral-800 rounded-lg"><i data-lucide="tags" class="h-5 w-5 text-emerald-400"></i></div>
-              </div>
-              <div class="flex justify-between items-center border-t border-neutral-800/80 pt-4 text-xs">
-                <span class="text-neutral-500">필터 분류 바 정렬 정렬</span>
-                <a href="#/admin/categories" class="text-accent hover:text-blue-300 font-bold flex items-center gap-0.5">바로가기 <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
-              </div>
-            </div>
-            <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl flex flex-col justify-between space-y-4 shadow-lg hover:border-neutral-700 transition-colors">
-              <div class="flex justify-between items-start">
-                <div>
-                  <span class="text-xs text-neutral-400 font-bold tracking-tight block mb-1">고객 문의</span>
-                  <span class="text-3xl font-black text-white">${inquiries.length}</span>
-                </div>
-                <div class="p-3 bg-neutral-950 border border-neutral-800 rounded-lg"><i data-lucide="message-square" class="h-5 w-5 text-indigo-400"></i></div>
-              </div>
-              <div class="flex justify-between items-center border-t border-neutral-800/80 pt-4 text-xs">
-                <span class="text-neutral-500">웹 의뢰 폼 수신함</span>
-                <a href="#inquiries-box" class="text-accent hover:text-blue-300 font-bold flex items-center gap-0.5">목록보기 <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Active Settings Block -->
-          <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl shadow-lg space-y-4">
-            <h2 class="text-sm font-bold text-white tracking-wide border-b border-neutral-800/80 pb-3 flex items-center gap-2">
-              <i data-lucide="file-text" class="h-4 w-4 text-neutral-400"></i> 활성 사이트 메타 정보
-            </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div>
-                <span class="text-neutral-500 block mb-1">사이트 타이틀</span>
-                <p class="text-neutral-300 font-medium">${settings.site_title}</p>
-              </div>
-              <div>
-                <span class="text-neutral-500 block mb-1">대표 이메일</span>
-                <p class="text-neutral-300 font-medium">${settings.contact_email}</p>
-              </div>
-              <div class="sm:col-span-2">
-                <span class="text-neutral-500 block mb-1">히어로 헤드라인</span>
-                <p class="text-neutral-300 font-medium">${settings.hero_title}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Inquiries Inbox -->
-          <div id="inquiries-box" class="bg-neutral-900 border border-neutral-800 rounded-xl shadow-lg overflow-hidden">
-            <div class="p-6 border-b border-neutral-800 flex justify-between items-center">
-              <h2 class="text-sm font-bold text-white tracking-wide flex items-center gap-2">
-                <i data-lucide="message-square" class="h-4 w-4 text-neutral-400"></i> 고객 문의 수신함
-              </h2>
-              <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-900 font-bold px-2 py-0.5 rounded-full">Total ${inquiries.length}</span>
-            </div>
-            
-            ${inquiries.length > 0 ? `
-              <div class="divide-y divide-neutral-800">
-                ${inquiries.map(inq => `
-                  <div class="p-6 space-y-4 hover:bg-neutral-900/50 transition-colors">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div class="space-y-1">
-                        <span class="text-xs font-black text-white">${inq.subject}</span>
-                        <div class="flex items-center gap-3 text-[10px] text-neutral-400 font-light">
-                          <span class="font-bold text-neutral-300">${inq.name}</span>
-                          <span>|</span>
-                          <a href="mailto:${inq.email}" class="hover:text-accent flex items-center gap-0.5"><i data-lucide="mail" class="h-3 w-3"></i> ${inq.email}</a>
-                        </div>
-                      </div>
-                      <div class="flex items-center gap-4">
-                        <span class="text-[10px] text-neutral-500 font-mono flex items-center gap-1">
-                          <i data-lucide="calendar" class="h-3 w-3"></i> ${new Date(inq.created_at).toLocaleString()}
-                        </span>
-                        <button onclick="deleteDashboardInquiry('${inq.id}')" class="text-[10px] font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer">삭제</button>
-                      </div>
-                    </div>
-                    <p class="text-xs sm:text-sm text-neutral-400 leading-relaxed font-light whitespace-pre-line bg-neutral-950 p-4 border border-neutral-800/80 rounded-lg">${inq.message}</p>
-                  </div>
-                `).join("")}
-              </div>
-            ` : `
-              <div class="py-16 text-center text-xs text-neutral-500">수신된 고객 문의가 존재하지 않습니다.</div>
-            `}
-          </div>
-        </div>
-      `;
-    }
-
-    // Delete inquiry trigger from dashboard
-    window.deleteDashboardInquiry = function(id) {
-      if (confirm("이 문의 내역을 삭제하시겠습니까?")) {
-        db.deleteInquiry(id);
-        renderAdminDashboardView();
-        if (typeof lucide !== "undefined") lucide.createIcons();
       }
     };
 
@@ -2469,34 +2325,10 @@
             
             <!-- Left panel (Site Info) -->
             <div class="lg:col-span-8 bg-neutral-900 border border-neutral-800 p-6 sm:p-8 rounded-xl shadow-xl space-y-6">
-              <div class="space-y-1.5">
-                <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">사이트 타이틀</label>
-                <input type="text" id="s-title" value="${settings.site_title}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent" />
-              </div>
-              <div class="space-y-1.5">
-                <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">사이트 설명</label>
-                <textarea id="s-desc" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent resize-none leading-relaxed">${settings.site_description}</textarea>
-              </div>
-
-              <!-- Hero banner settings -->
-              <div class="border-t border-neutral-800 pt-6 space-y-6">
-                <h3 class="text-xs font-bold text-white tracking-wide uppercase flex items-center gap-1.5">
-                  <i data-lucide="globe" class="h-4 w-4 text-neutral-500"></i> 메인 홈 히어로 텍스트 편집
-                </h3>
-                <div class="space-y-1.5">
-                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">히어로 대형 타이틀</label>
-                  <input type="text" id="s-hero-title" value="${settings.hero_title}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none" />
-                </div>
-                <div class="space-y-1.5">
-                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">히어로 서브 설명문구</label>
-                  <textarea id="s-hero-sub" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none resize-none leading-relaxed">${settings.hero_subtitle}</textarea>
-                </div>
-              </div>
-
               <!-- Home "Team Philosophy" section (below WORKS) -->
-              <div class="border-t border-neutral-800 pt-6 space-y-6">
+              <div class="space-y-6">
                 <h3 class="text-xs font-bold text-white tracking-wide uppercase flex items-center gap-1.5">
-                  <i data-lucide="type" class="h-4 w-4 text-neutral-500"></i> 홈 - WORKS 하단 팀 소개 문구 편집
+                  <i data-lucide="type" class="h-4 w-4 text-neutral-500"></i> 팀 설명
                 </h3>
                 <div class="space-y-1.5">
                   <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">타이틀 1행 (영문)</label>
@@ -2511,21 +2343,28 @@
                   <textarea id="s-about-body" rows="8" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none resize-none leading-relaxed">${settings.about_body}</textarea>
                 </div>
               </div>
+
+              <div class="border-t border-neutral-800 pt-6 space-y-6">
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">사이트 타이틀</label>
+                  <input type="text" id="s-title" value="${settings.site_title}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">사이트 설명</label>
+                  <textarea id="s-desc" rows="3" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-accent resize-none leading-relaxed">${settings.site_description}</textarea>
+                </div>
+              </div>
             </div>
 
             <!-- Right panel (Metadata & Actions) -->
             <div class="lg:col-span-4 space-y-6">
               <div class="bg-neutral-900 border border-neutral-800 p-6 rounded-xl shadow-xl space-y-5">
                 <h3 class="text-xs font-bold text-white tracking-wide uppercase border-b border-neutral-800 pb-3 flex items-center gap-1.5">
-                  <i data-lucide="mail" class="h-4 w-4 text-neutral-500"></i> 문의처 & SNS 관리
+                  <i data-lucide="mail" class="h-4 w-4 text-neutral-500"></i> 문의처 관리
                 </h3>
                 <div class="space-y-1.5">
                   <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">대표 문의 이메일</label>
                   <input type="email" id="s-email" value="${settings.contact_email}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
-                </div>
-                <div class="space-y-1.5">
-                  <label class="text-[10px] font-bold tracking-widest text-neutral-400 uppercase">인스타그램 주소</label>
-                  <input type="text" id="s-insta" value="${settings.instagram_url}" class="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-xs text-white focus:outline-none" />
                 </div>
 
               </div>
@@ -2552,16 +2391,17 @@
       saveBtn.disabled = true;
       saveBtn.innerText = "저장 중...";
 
+      const existing = db.getSettings();
       const payload = {
         site_title: document.getElementById("s-title").value,
         site_description: document.getElementById("s-desc").value,
-        hero_title: document.getElementById("s-hero-title").value,
-        hero_subtitle: document.getElementById("s-hero-sub").value,
+        hero_title: existing.hero_title,
+        hero_subtitle: existing.hero_subtitle,
         about_heading_line1: document.getElementById("s-about-h1").value,
         about_heading_line2: document.getElementById("s-about-h2").value,
         about_body: document.getElementById("s-about-body").value,
         contact_email: document.getElementById("s-email").value,
-        instagram_url: document.getElementById("s-insta").value
+        instagram_url: existing.instagram_url
       };
 
       setTimeout(() => {
