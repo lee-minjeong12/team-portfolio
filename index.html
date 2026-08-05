@@ -928,8 +928,11 @@
       hero.addEventListener("mousemove", function(e) {
         const rect = hero.getBoundingClientRect();
         const relX = e.clientX - rect.left;
-        // 0 at (or left of) center, ramping to 1 as the cursor nears the right edge.
-        progress = Math.max(0, Math.min(1, (relX - rect.width * 0.5) / (rect.width * 0.5)));
+        // Reach full spread well before the literal edge of the screen: progress
+        // ramps from 0 starting at 35% across, to 1 by 75% across.
+        const rangeStart = rect.width * 0.35;
+        const rangeEnd = rect.width * 0.75;
+        progress = Math.max(0, Math.min(1, (relX - rangeStart) / (rangeEnd - rangeStart)));
         ensureLoop();
 
         if (dot) {
