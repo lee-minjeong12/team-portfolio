@@ -1730,20 +1730,24 @@
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr class="border-b border-neutral-800 bg-neutral-950 text-[10px] font-bold tracking-widest text-neutral-500 uppercase">
-                    <th class="p-4 pl-6 w-24">대표 썸네일</th>
+                    <th class="p-4 pl-6 w-8"></th>
+                    <th class="p-4 w-24">대표 썸네일</th>
                     <th class="p-4">프로젝트 정보</th>
                     <th className="p-4">카테고리</th>
                     <th class="p-4 text-center">공개 설정</th>
                     <th class="p-4 text-right pr-6 w-40">관리 작업</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-neutral-800 text-xs">
+                <tbody class="divide-y divide-neutral-800 text-xs" id="project-list-dnd">
                   ${projects.map(proj => {
                     const projCatIds = proj.category_ids || (proj.category_id ? [proj.category_id] : []);
                     const projCatNames = projCatIds.map(id => { const c = categories.find(c => c.id === id); return c ? c.name : null; }).filter(Boolean);
                     return `
-                      <tr class="hover:bg-neutral-950/40 transition-colors">
+                      <tr class="hover:bg-neutral-950/40 transition-colors" draggable="true" data-proj-id="${proj.id}" ondragstart="handleProjDragStart(event)" ondragover="handleProjDragOver(event)" ondragleave="handleProjDragLeave(event)" ondrop="handleProjDrop(event)" ondragend="handleProjDragEnd(event)">
                         <td class="p-4 pl-6">
+                          <i data-lucide="grip-vertical" class="h-4 w-4 text-neutral-600 cursor-grab" title="드래그해서 순서 변경"></i>
+                        </td>
+                        <td class="p-4">
                           <div class="h-12 w-16 bg-neutral-800 rounded border border-neutral-700/80 overflow-hidden relative">
                             ${proj.thumbnail_url ? `<img src="${proj.thumbnail_url}" alt="" class="h-full w-full object-cover" />` : '<span class="text-[8px] text-neutral-500 flex items-center justify-center h-full">No image</span>'}
                           </div>
@@ -1860,10 +1864,7 @@
                       <span>공개 여부</span>
                       <input type="checkbox" id="f-published" class="w-4 h-4 rounded text-accent bg-neutral-900 border-neutral-800 focus:ring-accent" />
                     </div>
-                    <div class="space-y-1 pt-1">
-                      <label class="text-[9px] font-bold text-neutral-400 uppercase">정렬 순서</label>
-                      <input type="number" id="f-order" value="0" class="w-full bg-neutral-900 border border-neutral-800 rounded px-2.5 py-1 text-xs text-white" />
-                    </div>
+                    <p class="text-[10px] text-neutral-500 font-light pt-1">노출 순서는 프로젝트 목록에서 드래그로 바꿀 수 있어요.</p>
                   </div>
 
                   <!-- Thumbnail Image -->
@@ -2025,7 +2026,6 @@
           renderScopeButtons();
           
           document.getElementById("f-published").checked = proj.is_published;
-          document.getElementById("f-order").value = proj.sort_order;
           document.getElementById("f-video").value = proj.video_url || "";
 
           // Thumbnail preview
@@ -2045,7 +2045,6 @@
         // Create mode
         document.getElementById("modal-title").innerText = "신규 프로젝트 등록";
         document.getElementById("f-published").checked = true;
-        document.getElementById("f-order").value = "0";
         document.getElementById("thumb-preview-box").classList.add("hidden");
         currentGalleryUrls = [];
         currentScopeTags = [];
@@ -2158,7 +2157,6 @@
         scope_of_work: [...currentScopeTags],
         impact: document.getElementById("f-impact").value.trim(),
         is_published: document.getElementById("f-published").checked,
-        sort_order: Number(document.getElementById("f-order").value),
         video_url: document.getElementById("f-video").value,
         thumbnail_url: document.getElementById("f-thumb-url").value,
         media_urls: currentGalleryUrls
@@ -2166,12 +2164,56 @@
 
       if (currentEditProjectId) {
         payload.id = currentEditProjectId;
+        // Keep the existing position; reordering happens via drag-and-drop in the list.
+        const existing = db.getProjectById(currentEditProjectId);
+        payload.sort_order = existing ? existing.sort_order : db.getProjects(true).length + 1;
+      } else {
+        // New projects are appended to the end of the list.
+        payload.sort_order = db.getProjects(true).length + 1;
       }
 
       db.saveProject(payload);
       closeProjectModal();
       renderAdminProjectsView();
       if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+
+    // Drag-and-drop reordering for projects
+    let draggedProjectId = null;
+    window.handleProjDragStart = function(e) {
+      draggedProjectId = e.currentTarget.dataset.projId;
+      e.currentTarget.classList.add("opacity-40");
+      e.dataTransfer.effectAllowed = "move";
+    };
+    window.handleProjDragOver = function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      e.currentTarget.classList.add("bg-accent/10");
+    };
+    window.handleProjDragLeave = function(e) {
+      e.currentTarget.classList.remove("bg-accent/10");
+    };
+    window.handleProjDrop = function(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove("bg-accent/10");
+      const targetId = e.currentTarget.dataset.projId;
+      if (!draggedProjectId || draggedProjectId === targetId) return;
+
+      const list = db.getProjects(true);
+      const fromIdx = list.findIndex(p => p.id === draggedProjectId);
+      const toIdx = list.findIndex(p => p.id === targetId);
+      if (fromIdx === -1 || toIdx === -1) return;
+
+      const [moved] = list.splice(fromIdx, 1);
+      list.splice(toIdx, 0, moved);
+      list.forEach((p, i) => db.saveProject({ id: p.id, sort_order: i + 1 }));
+
+      renderAdminProjectsView();
+      if (typeof lucide !== "undefined") lucide.createIcons();
+    };
+    window.handleProjDragEnd = function(e) {
+      e.currentTarget.classList.remove("opacity-40");
+      draggedProjectId = null;
     };
 
     // Admin Categories View
