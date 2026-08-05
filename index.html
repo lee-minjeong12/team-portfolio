@@ -549,10 +549,13 @@
     // ==========================================
     function getRoute() {
       const hash = window.location.hash || "#/";
+      const safeDecode = (s) => {
+        try { return decodeURIComponent(s); } catch (e) { return s; }
+      };
 
       // Dynamic route matching: #/works/:slug/pdf
       if (hash.startsWith("#/works/") && hash.endsWith("/pdf")) {
-        const slug = hash.replace("#/works/", "").replace("/pdf", "");
+        const slug = safeDecode(hash.replace("#/works/", "").replace("/pdf", ""));
         if (slug) {
           return { name: "project-pdf", params: { slug } };
         }
@@ -560,7 +563,7 @@
 
       // Dynamic route matching: #/works/:slug
       if (hash.startsWith("#/works/")) {
-        const slug = hash.replace("#/works/", "");
+        const slug = safeDecode(hash.replace("#/works/", ""));
         if (slug && !slug.includes("/")) {
           return { name: "project-detail", params: { slug } };
         }
