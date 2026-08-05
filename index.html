@@ -121,20 +121,27 @@
     }
     @media print {
       .no-print { display: none !important; }
-      @page { size: landscape; margin: 0; }
-      html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #1a1f24 !important; }
+      @page { size: 297mm 210mm; margin: 0; }
+      html, body { width: 297mm; height: 210mm; margin: 0 !important; padding: 0 !important; background: #1a1f24 !important; overflow: hidden !important; }
+      /* Outer box is pinned to exactly one physical page and clips anything
+         beyond it, so the print output can never spill onto a second page. */
       .pdf-page {
-        width: 100vw;
-        min-height: 100vh;
+        width: 297mm !important;
+        height: 210mm !important;
         max-width: none !important;
-        display: flex;
-        align-items: center;
-        box-sizing: border-box;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
         margin: 0 !important;
-        /* Scale the exact same layout shown in the on-screen preview down to fit
-           one printed page, instead of overriding individual font sizes (which
-           broke the layout and no longer matched the preview). */
-        zoom: 0.62;
+        padding: 10mm 16mm !important;
+      }
+      /* Inner wrapper is scaled down (not resized) so the exact same layout
+         shown in the on-screen preview is preserved, just shrunk to fit. */
+      .pdf-scale-inner {
+        transform: scale(0.62);
+        transform-origin: top left;
+        width: calc(100% / 0.62);
       }
     }
 
@@ -1339,6 +1346,7 @@
 
           <!-- PDF Page -->
           <div class="pdf-page mx-auto max-w-[1280px] px-10 py-14 sm:px-16 sm:py-16">
+            <div class="pdf-scale-inner">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
               <!-- Left: Text content -->
               <div class="lg:col-span-6 space-y-10">
@@ -1394,6 +1402,7 @@
                   `).join("")}
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
