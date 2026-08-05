@@ -1232,7 +1232,7 @@
                   <span class="text-sm font-black uppercase tracking-tight text-white">SOLUTION</span>
                   <div class="bg-white/15 rounded-2xl p-6 sm:p-8 space-y-3">
                     ${project.solution.map((item, i) => `
-                      <p class="text-xl sm:text-2xl text-neutral-300 leading-relaxed flex gap-3">
+                      <p class="text-base text-neutral-300 leading-relaxed flex gap-3">
                         <span class="text-accent2 font-bold shrink-0">${i + 1}.</span>
                         <span>${item}</span>
                       </p>
@@ -1246,7 +1246,7 @@
                   <span class="text-sm font-black uppercase tracking-tight text-white">SCOPE OF WORK</span>
                   <div class="flex flex-wrap gap-x-4 gap-y-2 pt-2 pl-6 sm:pl-8">
                     ${project.scope_of_work.map(tag => `
-                      <span class="text-xl sm:text-2xl font-black uppercase tracking-tight text-accent2">${tag}</span>
+                      <span class="text-sm font-black uppercase tracking-tight text-accent2">${tag}</span>
                     `).join("")}
                   </div>
                 </div>
@@ -1256,8 +1256,8 @@
                 <div class="space-y-4">
                   <span class="text-sm font-black uppercase tracking-tight text-white">IMPACT</span>
                   <div class="flex items-start gap-3 pt-2 pl-6 sm:pl-8">
-                    <i data-lucide="arrow-right" class="h-6 w-6 sm:h-7 sm:w-7 text-accent2 shrink-0 mt-1"></i>
-                    <p class="text-xl sm:text-2xl text-neutral-300 leading-relaxed">${project.impact}</p>
+                    <i data-lucide="arrow-right" class="h-5 w-5 text-accent2 shrink-0 mt-1"></i>
+                    <p class="text-base text-neutral-300 leading-relaxed">${project.impact}</p>
                   </div>
                 </div>
               ` : ''}
