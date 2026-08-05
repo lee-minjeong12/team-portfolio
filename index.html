@@ -869,55 +869,58 @@
       const dot = document.getElementById("hero-cursor-dot");
       const lines = Array.from(hero.querySelectorAll(".hero-line"));
 
-      // Momentum-driven drift: fast rightward mouse movement snaps the lines
-      // out aggressively, then they settle back down over time (spring-like),
-      // rather than being rigidly pinned to the raw cursor X position.
-      let drift = 0;
-      let lastX = null;
+      // Smooth, continuously interpolated cursor-follow: each line's position
+      // eases toward a target derived from the live cursor X each frame, so the
+      // motion glides fluidly all the way out (and back) instead of snapping.
+      let progress = 0; // 0..1, how far right the cursor currently is within the hero
+      let currentOffsets = lines.map(() => 0);
       let rafId = null;
 
-      function applyOffsets() {
+      function computeTargets() {
         const rect = hero.getBoundingClientRect();
-
-        // 3TEAM (last line) may travel all the way to just before the right padding.
         const lastLine = lines[lines.length - 1];
         const lastMaxOffset = Math.max(0, rect.width - lastLine.offsetLeft - lastLine.offsetWidth - 4);
 
-        lines.forEach(function(line, i) {
-          const depth = parseFloat(line.dataset.depth) || 0;
-          const rawOffset = Math.max(0, drift * depth);
-          const naturalWidth = line.offsetWidth; // layout width is unaffected by the transform
-          const naturalLeft = line.offsetLeft; // position within the (positioned) hero section, unaffected by transform
+        return lines.map(function(line, i) {
+          if (i === 0) return 0; // first line (CONTENTS) stays fixed
+          const naturalWidth = line.offsetWidth;
+          const naturalLeft = line.offsetLeft;
           const ownMaxOffset = Math.max(0, rect.width - naturalLeft - naturalWidth - 4);
-          // CREATIVE (middle line) only travels up to halfway of 3TEAM's full travel distance.
-          // The last line (3TEAM) travels its own full available distance.
           const isLast = i === lines.length - 1;
+          // CREATIVE (middle line) only travels up to halfway of 3TEAM's full travel distance.
           const maxOffset = isLast ? lastMaxOffset : Math.min(ownMaxOffset, lastMaxOffset * 0.5);
-          const offset = Math.min(rawOffset, maxOffset);
-          line.style.transform = "translateX(" + offset + "px)";
+          return maxOffset * progress;
         });
       }
 
       function tick() {
-        drift *= 0.94;
-        if (drift < 0.5) drift = 0;
-        applyOffsets();
-        if (drift > 0) {
+        const targets = computeTargets();
+        let stillMoving = false;
+
+        lines.forEach(function(line, i) {
+          const diff = targets[i] - currentOffsets[i];
+          if (Math.abs(diff) > 0.3) stillMoving = true;
+          currentOffsets[i] += diff * 0.14; // ease factor: higher = snappier, lower = silkier
+          line.style.transform = "translateX(" + currentOffsets[i] + "px)";
+        });
+
+        if (stillMoving) {
           rafId = requestAnimationFrame(tick);
         } else {
           rafId = null;
         }
       }
 
-      hero.addEventListener("mousemove", function(e) {
-        if (lastX !== null) {
-          const movementX = e.clientX - lastX;
-          drift += movementX > 0 ? movementX * 2.4 : movementX * 0.7;
-          drift = Math.max(0, Math.min(drift, 260));
-        }
-        lastX = e.clientX;
-        applyOffsets();
+      function ensureLoop() {
         if (!rafId) rafId = requestAnimationFrame(tick);
+      }
+
+      hero.addEventListener("mousemove", function(e) {
+        const rect = hero.getBoundingClientRect();
+        const relX = e.clientX - rect.left;
+        // 0 at (or left of) center, ramping to 1 as the cursor nears the right edge.
+        progress = Math.max(0, Math.min(1, (relX - rect.width * 0.5) / (rect.width * 0.5)));
+        ensureLoop();
 
         if (dot) {
           dot.style.left = e.clientX + "px";
@@ -927,12 +930,12 @@
 
       hero.addEventListener("mouseenter", function() {
         if (dot) dot.style.opacity = "1";
-        lastX = null;
       });
 
       hero.addEventListener("mouseleave", function() {
         if (dot) dot.style.opacity = "0";
-        lastX = null;
+        progress = 0;
+        ensureLoop();
       });
 
       lines.forEach(function(line) {
