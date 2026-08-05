@@ -1070,12 +1070,6 @@
 
             <!-- Sort & Year Controls -->
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2 self-end md:self-auto">
-              <!-- Sort Order -->
-              <div class="flex items-center gap-3">
-                <button onclick="setWorksSortOrder('latest')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${currentSortOrder === 'latest' ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">LATEST</button>
-                <button onclick="setWorksSortOrder('oldest')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${currentSortOrder === 'oldest' ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">OLDEST</button>
-              </div>
-
               <!-- Year Filter -->
               <div class="flex items-center gap-3">
                 <button onclick="setWorksYearFilter('all')" class="text-xs sm:text-sm font-black uppercase tracking-tight transition-colors duration-300 ${currentYearFilter === 'all' ? 'text-accent2' : (dark ? 'text-white/50 hover:text-white' : 'text-neutral-400 hover:text-black')}">ALL YEARS</button>
