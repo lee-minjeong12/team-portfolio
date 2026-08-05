@@ -717,8 +717,10 @@
       const isWorksContext = hash === "#/works" || hash.startsWith("#/works/");
       if (!isWorksContext) return "";
       return `
-        <div class="fixed top-6 left-6 sm:top-8 sm:left-10 z-[70]">
-          <a href="javascript:void(0)" onclick="goBackToPortfolio(event)" class="text-xs sm:text-sm font-black uppercase tracking-tight select-none" style="color:#ffffff; mix-blend-mode: difference;">CONTENTS CREATIVE 3TEAM</a>
+        <div class="fixed top-6 right-6 sm:top-8 sm:right-10 z-[70]">
+          <a href="javascript:void(0)" onclick="goBackToPortfolio(event)" class="inline-flex items-center gap-2 text-xs sm:text-sm font-black uppercase tracking-tight select-none" style="color:#ffffff; mix-blend-mode: difference;">
+            <i data-lucide="arrow-left" class="h-3.5 w-3.5 sm:h-4 sm:w-4"></i> CONTENTS CREATIVE 3TEAM
+          </a>
         </div>
       `;
     }
@@ -728,18 +730,13 @@
       return `
         <footer class="w-full border-t-2 border-black bg-[#111111] text-white">
           <div class="mx-auto max-w-7xl px-3 py-16 sm:px-4 sm:py-20">
-            <div class="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 class="text-xl font-black tracking-tight text-white mb-4">CONTENTS CREATIVE 3TEAM</h3>
-                <p class="text-sm text-neutral-400 max-w-md leading-relaxed font-light">${settings.site_description}</p>
-              </div>
-              <div class="flex flex-col gap-6 md:items-end">
-                <span class="text-xs font-bold tracking-widest text-accent">GET IN TOUCH</span>
-                <a href="mailto:${settings.contact_email}" class="text-lg font-medium text-white hover:text-accent2 transition-colors flex items-center gap-1 group">
-                  ${settings.contact_email}
-                  <i data-lucide="arrow-up-right" class="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
-                </a>
-              </div>
+            <div>
+              <h3 class="text-xl font-black tracking-tight text-white mb-2">CONTENTS CREATIVE 3TEAM</h3>
+              <a href="mailto:${settings.contact_email}" class="inline-flex items-center gap-1 text-lg font-medium text-white hover:text-accent2 transition-colors group mb-4">
+                ${settings.contact_email}
+                <i data-lucide="arrow-up-right" class="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+              </a>
+              <p class="text-sm text-neutral-400 max-w-md leading-relaxed font-light">${settings.site_description}</p>
             </div>
             <div class="mt-16 border-t border-neutral-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
               <span class="text-xs text-neutral-500 font-light">© ${new Date().getFullYear()} CONTENTS CREATIVE 3TEAM. All rights reserved.</span>
@@ -1228,9 +1225,8 @@
             <div class="lg:col-span-8 space-y-12 lg:order-1">
               ${project.solution && project.solution.length > 0 ? `
                 <div class="space-y-4">
-                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SOLUTION</span>
-                  <h2 class="text-2xl font-bold tracking-tight text-white">문제 해결 방식</h2>
-                  <div class="space-y-3 pt-2">
+                  <span class="text-sm font-black uppercase tracking-tight text-white">SOLUTION</span>
+                  <div class="bg-white/5 rounded-2xl p-6 sm:p-8 space-y-3">
                     ${project.solution.map((item, i) => `
                       <p class="text-base text-neutral-300 leading-relaxed flex gap-3">
                         <span class="text-accent2 font-bold shrink-0">${i + 1}.</span>
@@ -1243,8 +1239,7 @@
 
               ${project.scope_of_work && project.scope_of_work.length > 0 ? `
                 <div class="space-y-4">
-                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">SCOPE OF WORK</span>
-                  <h2 class="text-2xl font-bold tracking-tight text-white">작업 범위</h2>
+                  <span class="text-sm font-black uppercase tracking-tight text-white">SCOPE OF WORK</span>
                   <div class="flex flex-wrap gap-x-4 gap-y-2 pt-2">
                     ${project.scope_of_work.map(tag => `
                       <span class="text-sm font-black uppercase tracking-tight text-white">${tag}</span>
@@ -1255,8 +1250,7 @@
 
               ${project.impact ? `
                 <div class="space-y-4">
-                  <span class="text-[10px] font-bold tracking-widest text-accent uppercase">IMPACT</span>
-                  <h2 class="text-2xl font-bold tracking-tight text-white">결과 및 임팩트</h2>
+                  <span class="text-sm font-black uppercase tracking-tight text-white">IMPACT</span>
                   <div class="flex items-start gap-3 pt-2">
                     <i data-lucide="arrow-right" class="h-5 w-5 text-accent2 shrink-0 mt-1"></i>
                     <p class="text-base text-neutral-300 leading-relaxed">${project.impact}</p>
