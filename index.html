@@ -826,14 +826,14 @@
         <!-- Team Philosophy -->
         <section class="w-full bg-black">
           <div class="py-24 sm:py-32 max-w-7xl mx-auto w-full px-3 sm:px-4 space-y-12">
-            <h2 class="font-black uppercase tracking-tight text-white text-3xl sm:text-5xl lg:text-6xl leading-[1.35]">
+            <h2 class="font-black uppercase tracking-tight text-white text-3xl sm:text-5xl lg:text-6xl leading-[2]">
               ${settings.about_heading_line1}<br />${settings.about_heading_line2}
             </h2>
-            <div class="max-w-3xl space-y-8 text-base sm:text-lg leading-loose">
+            <div class="max-w-5xl space-y-8 text-base sm:text-lg leading-loose">
               ${(settings.about_body || "").split("\n\n").map(s => s.trim()).filter(Boolean).map((para, i) => {
-                if (i === 0) return `<p class="font-bold text-accent2">${para}</p>`;
-                if (i === 1 || i === 2) return `<p class="font-bold text-white">${para}</p>`;
-                return `<p class="text-neutral-300 font-light">${para}</p>`;
+                if (i === 0) return `<p class="font-bold text-accent2 whitespace-pre-line">${para}</p>`;
+                if (i === 1) return `<p class="font-bold text-white whitespace-pre-line">${para}</p>`;
+                return `<p class="text-neutral-300 font-light whitespace-pre-line">${para}</p>`;
               }).join("")}
             </div>
           </div>
