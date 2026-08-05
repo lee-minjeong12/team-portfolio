@@ -1001,16 +1001,8 @@
         return matchesCategory && matchesYear;
       });
 
-      // Sort logic
-      filtered.sort((a, b) => {
-        const yearA = parseInt(a.year, 10) || 0;
-        const yearB = parseInt(b.year, 10) || 0;
-        if (currentSortOrder === "latest") {
-          return yearB - yearA || (b.sort_order - a.sort_order);
-        } else {
-          return yearA - yearB || (a.sort_order - b.sort_order);
-        }
-      });
+      // Sort logic: match the order arranged in the admin panel (drag-and-drop sort_order)
+      filtered.sort((a, b) => a.sort_order - b.sort_order);
 
       let gridHtml = "";
       if (filtered.length > 0) {
